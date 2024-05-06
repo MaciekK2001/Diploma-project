@@ -14,6 +14,7 @@ import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -118,6 +119,13 @@ public class AppService {
         query.setMaxResults(lastActivity - firstActivity + 1);
 
         return query.getResultList();
+    }
+
+    private UUID retriveCurrentLoggedInUserId(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser appUser = appUserRepository.findAppUserByEmail(email);
+
+        return appUser.getAppUserId();
     }
 
 }
