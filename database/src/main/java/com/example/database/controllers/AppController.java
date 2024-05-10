@@ -43,7 +43,7 @@ public class AppController {
     public UserStatsGetDTO getUser(@PathVariable UUID userId,
                                    @RequestParam Integer timePeriodOfActivities){
 
-        return appService.getMyUserDTO(userId, timePeriodOfActivities);
+        return appService.getUserStatsDTO(userId, timePeriodOfActivities);
     }
 
     @PostMapping("/api/activities")

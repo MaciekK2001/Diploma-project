@@ -31,7 +31,7 @@ public class AppService {
 
     private final EntityManager entityManager;
 
-    public UserStatsGetDTO getMyUserDTO(UUID userId, Integer timePeriodOfActivities){
+    public UserStatsGetDTO getUserStatsDTO(UUID userId, Integer timePeriodOfActivities){
 
         AppUser appUserToGet = appUserRepository.findById(userId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "AppUser with id: " + userId + " wasn't found")
@@ -56,22 +56,26 @@ public class AppService {
                         activityCreateDTO.getUserId() + " wasn't found")
         );
 
+        if(!retriveCurrentLoggedInUserId().equals(appUser.getAppUserId())){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only create activities for yourself");
+        }
+
         return activityRepository.save(Activity.builder()
                 .type(activityCreateDTO.getType())
                 .time(activityCreateDTO.getTime())
                 .burntCalories(activityCreateDTO.getBurntCalories())
                 .appUser(appUser).build());
 
-        //TODO check if i create an activity for myself (compare userId with session userId)
-
     }
 
     public void deleteActivity(UUID activityId){
-        //todo: check if session user owns the activity
 
         Activity activityToDelete = activityRepository.findById(activityId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity with id: " + activityId +
                         " wasn't found"));
+        if(!retriveCurrentLoggedInUserId().equals(activityToDelete.getAppUser().getAppUserId())){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your activities");
+        }
 
         activityRepository.delete(activityToDelete);
     }
@@ -82,6 +86,9 @@ public class AppService {
         Activity activityToUpdate = activityRepository.findById(activityUpdateDTO.getActivityId()).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity with id: " + activityUpdateDTO.getActivityId() +
                         " wasn't found"));
+        if(!retriveCurrentLoggedInUserId().equals(activityToUpdate.getAppUser().getAppUserId())){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your activities");
+        }
 
         activityToUpdate.setType(activityUpdateDTO.getType());
         activityToUpdate.setTime(activityUpdateDTO.getTime());
@@ -89,12 +96,9 @@ public class AppService {
 
         return activityRepository.save(activityToUpdate);
 
-        //TODO check if i create an activity for myself (compare userId with session userId)
-
     }
 
     public List<Activity> getActivitiesForUser(ActivityPageParamsDTO activityPageParamsDTO){
-        //todo: same thing - session
 
         return findActivityPageForUser(activityPageParamsDTO.getUserId(),
                 activityPageParamsDTO.getFirstActivity(), activityPageParamsDTO.getLastActivity(),
