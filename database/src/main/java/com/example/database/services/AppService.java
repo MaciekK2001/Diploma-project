@@ -111,8 +111,10 @@ public class AppService {
                                                    String sortBy, Sort.Direction sortOrder, List<String> conditions) {
         String jpqlQuery = "SELECT a FROM Activity a WHERE a.appUser.appUserId = :userId";
 
-        for(String condition : conditions){
-            jpqlQuery += " AND " + condition;
+        if(!(conditions == null)) {
+            for (String condition : conditions) {
+                jpqlQuery += " AND " + condition;
+            }
         }
 
         jpqlQuery += " ORDER BY a." + sortBy + " " + sortOrder;

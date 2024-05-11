@@ -1,8 +1,10 @@
 package com.example.database.services;
 
+import com.example.database.entities.AppUser;
 import com.example.database.entities.AuthenticationResponse;
 import com.example.database.entities.Token;
 import com.example.database.entities.User;
+import com.example.database.repositories.AppUserRepository;
 import com.example.database.repositories.TokenRepository;
 import com.example.database.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,8 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final AppUserRepository appUserRepository;
+
     public AuthenticationResponse register(User request) {
 
         // check if user already exist. if exist than authenticate the user
@@ -43,6 +47,12 @@ public class AuthenticationService {
         user.setRole(request.getRole());
 
         user = userRepository.save(user);
+        appUserRepository.save(AppUser.builder()
+                .email(request.getUsername())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .appUserId(user.getId())
+                .build());
 
         String jwt = jwtService.generateToken(user);
 

@@ -1,0 +1,54 @@
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName": "Maciej",
+  "lastName": "Kwiatkowski",
+  "username": "maciek-kwiatkowski@o2.pl",
+  "password": "kozak334",
+  "role": "USER"
+}
+####
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+"username": "maciek-kwiatkowski@o2.pl",
+"password": "kozak334"
+}
+####
+POST  http://localhost:8080/api/activities
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MTU0Mzc1NTksImV4cCI6MTcxNTUyMzk1OX0.yT0OD6bCDcFCsbEO7LXuEtQdW6CMzpt67QhLKsi1pmQv2Lt7ARw6Dukpk5OnKR3w
+
+{
+  "userId": "3c7fd59b-3c07-4ea1-8e01-be38ac6e5784",
+  "burntCalories": "455",
+  "time": "360000",
+  "type": "SWIM"
+}
+
+###
+GET  http://localhost:8080/api/activities
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MTU0NjU1NjEsImV4cCI6MTcxNTU1MTk2MX0.0p1j1eRNuPBh-HxI6l4ROG6KVya40M6pHQyl5-iDrDB3aX97nXXKbI1iiesdIXEx
+
+{
+  "userId": "6c84fb95-12c4-11ec-82a8-0242ac130001",
+  "firstActivity": "0",
+  "lastActivity": "1",
+  "sortOrder": "ASC",
+  "sortBy": "burntCalories"
+}
+###
+GET  http://localhost:8080/api/users/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MTU0NjU1NjEsImV4cCI6MTcxNTU1MTk2MX0.0p1j1eRNuPBh-HxI6l4ROG6KVya40M6pHQyl5-iDrDB3aX97nXXKbI1iiesdIXEx
+
+{
+"userId": "6c84fb95-12c4-11ec-82a8-0242ac130001",
+"firstActivity": "0",
+"lastActivity": "1",
+"sortOrder": "ASC",
+"sortBy": "burntCalories"
+}

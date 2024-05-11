@@ -16,7 +16,6 @@ import java.util.UUID;
 @Table(name = "app_user")
 public class AppUser {
     @Id
-    @GeneratedValue
     private UUID appUserId;
 
     @Column(nullable = false, length = 64)
@@ -27,9 +26,6 @@ public class AppUser {
 
     @Column(length = 1024)
     private String about;
-
-    @Column(nullable = false)
-    private LocalDate dateOfBirth;
 
     @Column(unique = true, nullable = false)
     private String email;

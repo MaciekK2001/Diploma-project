@@ -3,13 +3,13 @@ $$
 
 BEGIN
 -- Wstawianie przykładowych danych do tabeli app_user
-INSERT INTO app_user (app_user_id, first_name, last_name, about, date_of_birth, email)
+INSERT INTO app_user (app_user_id, first_name, last_name, about,  email)
 VALUES
-    ('6c84fb95-12c4-11ec-82a8-0242ac130001', 'John', 'Doe', 'Lorem ipsum dolor sit amet', '1990-05-15', 'john@example.com'),
-    ('6c84fb95-12c4-11ec-82a8-0242ac130002', 'Alice', 'Smith', 'Consectetur adipiscing elit', '1988-10-20', 'alice@example.com'),
-    ('6c84fb95-12c4-11ec-82a8-0242ac130003', 'Michael', 'Johnson', 'Sed do eiusmod tempor incididunt', '1995-03-08', 'michael@example.com'),
-    ('6c84fb95-12c4-11ec-82a8-0242ac130004', 'Emily', 'Brown', NULL, '1992-12-18', 'emily@example.com'),
-    ('6c84fb95-12c4-11ec-82a8-0242ac130005', 'David', 'Martinez', 'Ut labore et dolore magna aliqua', '1985-07-25', 'david@example.com');
+    ('6c84fb95-12c4-11ec-82a8-0242ac130001', 'John', 'Doe', 'Lorem ipsum dolor sit amet', 'john@example.com'),
+    ('6c84fb95-12c4-11ec-82a8-0242ac130002', 'Alice', 'Smith', 'Consectetur adipiscing elit', 'alice@example.com'),
+    ('6c84fb95-12c4-11ec-82a8-0242ac130003', 'Michael', 'Johnson', 'Sed do eiusmod tempor incididunt', 'michael@example.com'),
+    ('6c84fb95-12c4-11ec-82a8-0242ac130004', 'Emily', 'Brown', NULL, 'emily@example.com'),
+    ('6c84fb95-12c4-11ec-82a8-0242ac130005', 'David', 'Martinez', 'Ut labore et dolore magna aliqua', 'david@example.com');
 
 -- Wstawianie przykładowych danych do tabeli activity
 INSERT INTO activity (activity_id, app_user_id, burnt_calories, time, created_at, type)
