@@ -1,9 +1,6 @@
 package com.example.database.services;
 
-import com.example.database.dtos.ActivityCreateDTO;
-import com.example.database.dtos.ActivityPageParamsDTO;
-import com.example.database.dtos.ActivityUpdateDTO;
-import com.example.database.dtos.UserStatsGetDTO;
+import com.example.database.dtos.*;
 import com.example.database.entities.Activity;
 import com.example.database.entities.ActivityType;
 import com.example.database.entities.AppUser;
@@ -12,13 +9,18 @@ import com.example.database.repositories.AppUserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -105,6 +107,36 @@ public class AppService {
                 activityPageParamsDTO.getSortBy(),
                 activityPageParamsDTO.getSortOrder(),
                 activityPageParamsDTO.getConditions());
+    }
+
+    public List<UserRankingDTO> getUsersRanking(int pageNumber, int pageSize, Sort.Direction sortDirection){
+        Sort sort = Sort.by(sortDirection, "sumCalories");
+        Pageable pageRequest = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Map<String, Object>> page = activityRepository.getActivityUsersRanking(pageRequest);
+
+        List<Map<String, Object>> contentToMap = page.getContent();
+
+        return mapToUserRankingDTO(contentToMap);
+    }
+
+    private List<UserRankingDTO> mapToUserRankingDTO(List<Map<String, Object>> contentToMap){
+        List<UserRankingDTO> listToReturn = new ArrayList<>();
+
+        for(int i = 0; i < contentToMap.size(); i++){
+            AppUser appUser = (AppUser) contentToMap.get(i).get("appUser");
+            AppUserBasicDataDTO appUserBasicDataDTO = AppUserBasicDataDTO.builder()
+                    .email(appUser.getEmail())
+                    .firstName(appUser.getFirstName())
+                    .lastName(appUser.getLastName())
+                    .userId(appUser.getAppUserId()).build();
+            Long sumCalories = (Long) contentToMap.get(i).get("sumCalories");
+            UserRankingDTO userRankingDTO = UserRankingDTO.builder()
+                    .appUserBasicDataDTO(appUserBasicDataDTO)
+                    .burntCalories(sumCalories).build();
+            listToReturn.add(userRankingDTO);
+        }
+
+        return listToReturn;
     }
 
     private List<Activity> findActivityPageForUser(UUID userId, int firstActivity, int lastActivity,

@@ -41,7 +41,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAb
   "sortBy": "burntCalories"
 }
 ###
-GET  http://localhost:8080/api/users/
+GET  http://localhost:8080/api/users
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MTU0NjU1NjEsImV4cCI6MTcxNTU1MTk2MX0.0p1j1eRNuPBh-HxI6l4ROG6KVya40M6pHQyl5-iDrDB3aX97nXXKbI1iiesdIXEx
 
@@ -52,3 +52,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAb
 "sortOrder": "ASC",
 "sortBy": "burntCalories"
 }
+###
+GET  http://localhost:8080/api/users/ranking?pageSize=4&pageNumber=0&sortDirection=DESC
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MTU0NjU1NjEsImV4cCI6MTcxNTU1MTk2MX0.0p1j1eRNuPBh-HxI6l4ROG6KVya40M6pHQyl5-iDrDB3aX97nXXKbI1iiesdIXEx

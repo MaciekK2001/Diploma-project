@@ -1,9 +1,12 @@
 package com.example.database.repositories;
 
 import com.example.database.entities.Activity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Map;
 import java.util.UUID;
 
 public interface ActivityRepository extends JpaRepository<Activity, UUID> {
@@ -22,5 +25,9 @@ public interface ActivityRepository extends JpaRepository<Activity, UUID> {
             " ORDER BY a.created_at DESC " +
             "FETCH FIRST 1 ROW ONLY",nativeQuery = true)
     Activity getLastActivity(UUID userId);
+
+    @Query(value = "SELECT  a.appUser AS appUser,  SUM(a.burntCalories) AS sumCalories FROM Activity a " +
+            "GROUP BY a.appUser")
+    Page<Map<String, Object>> getActivityUsersRanking(Pageable pageable);
 
 }

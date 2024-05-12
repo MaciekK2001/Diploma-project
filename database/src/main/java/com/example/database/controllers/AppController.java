@@ -1,15 +1,13 @@
 package com.example.database.controllers;
 
-import com.example.database.dtos.ActivityCreateDTO;
-import com.example.database.dtos.ActivityPageParamsDTO;
-import com.example.database.dtos.ActivityUpdateDTO;
-import com.example.database.dtos.UserStatsGetDTO;
+import com.example.database.dtos.*;
 import com.example.database.entities.Activity;
 import com.example.database.entities.AuthenticationResponse;
 import com.example.database.entities.User;
 import com.example.database.services.AppService;
 import com.example.database.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,6 +65,14 @@ public class AppController {
     @GetMapping("/api/activities")
     public List<Activity> getActivities(@RequestBody ActivityPageParamsDTO activityPageParamsDTO){
         return appService.getActivitiesForUser(activityPageParamsDTO);
+    }
+
+    @GetMapping("/api/users/ranking")
+    public List<UserRankingDTO> getRanking(@RequestParam int pageSize,
+                                           @RequestParam int pageNumber,
+                                           @RequestParam Sort.Direction sortDirection){
+
+        return appService.getUsersRanking(pageNumber, pageSize, sortDirection);
     }
 
 }
