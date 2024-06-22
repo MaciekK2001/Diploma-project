@@ -1,7 +1,7 @@
 package com.example.myapplication.screen
 
 import android.content.Context
-import android.widget.Toast
+import android.provider.Settings.Global
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,12 +32,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import org.json.JSONObject
+import com.example.myapplication.network.ApiClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
+private val api = ApiClient();
 
 @Composable
 fun LoginPage(navController: NavHostController) {
@@ -84,7 +85,7 @@ fun LoginPage(navController: NavHostController) {
             Spacer(modifier = Modifier.height(20.dp))
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                 Button(
-                    onClick = { },
+                    onClick = { GlobalScope.launch(Dispatchers.IO) { api.login(username.value.text, password.value.text)}},
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -107,26 +108,5 @@ fun LoginPage(navController: NavHostController) {
         }
     }
 
-    fun loginUser(context: Context, requestQueue: RequestQueue, username: String, password: String) {
-        val url = "http://your-api-url.com/login"
-        val jsonRequest = JSONObject().apply {
-            put("username", username)
-            put("password", password)
-        }
-
-        val request = JsonObjectRequest(
-            Request.Method.POST, url, jsonRequest,
-            { response ->
-                Toast.makeText(context, "Login successful: $response", Toast.LENGTH_LONG).show()
-                // Handle successful response
-            },
-            { error ->
-                Toast.makeText(context, "Login failed: ${error.message}", Toast.LENGTH_LONG).show()
-                // Handle error
-            }
-        )
-
-        requestQueue.add(request)
-    }
-
 }
+

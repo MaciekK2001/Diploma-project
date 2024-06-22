@@ -1,5 +1,6 @@
 package com.example.database.dtos;
 
+import com.example.database.entities.ActivityType;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -13,15 +14,13 @@ import java.util.UUID;
 @Jacksonized
 public class ActivityPageParamsDTO {
 
-    UUID userId;
+    Integer pageSize;
 
-    Integer firstActivity;
-
-    Integer lastActivity;
+    Integer pageNumber;
 
     String sortBy;
 
     Sort.Direction sortOrder;
 
-    List<String> conditions;
+    List<ActivityType> conditions;
 }

@@ -17,20 +17,21 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class AppController {
 
     private final AppService appService;
 
     private final AuthenticationService authService;
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody User request
     ) {
         return ResponseEntity.ok(authService.register(request));
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody User request
     ) {
@@ -56,20 +57,22 @@ public class AppController {
         appService.deleteActivity(activityId);
     }
 
-    @PutMapping("/api/activities")
+    @PutMapping("/api/activities/{activityId}")
     @ResponseStatus(HttpStatus.OK)
-    public Activity updateActivity(@RequestBody ActivityUpdateDTO activityUpdateDTO){
-        return appService.updateActivity(activityUpdateDTO);
+    public Activity updateActivity(@RequestBody ActivityUpdateDTO activityUpdateDTO,
+                                    @PathVariable UUID activityId){
+        return appService.updateActivity(activityUpdateDTO, activityId);
     }
 
-    @GetMapping("/api/activities")
-    public List<Activity> getActivities(@RequestBody ActivityPageParamsDTO activityPageParamsDTO){
-        return appService.getActivitiesForUser(activityPageParamsDTO);
+    @GetMapping("/api/activities/{userId}")
+    public List<Activity> getActivities(@RequestBody ActivityPageParamsDTO activityPageParamsDTO,
+                                        @PathVariable UUID userId){
+        return appService.getActivitiesForUser(activityPageParamsDTO, userId);
     }
 
     @GetMapping("/api/users/ranking")
-    public List<UserRankingDTO> getRanking(@RequestParam int pageSize,
-                                           @RequestParam int pageNumber,
+    public List<UserRankingDTO> getRanking(@RequestParam(defaultValue = "10") int pageSize,
+                                           @RequestParam(defaultValue = "0") int pageNumber,
                                            @RequestParam Sort.Direction sortDirection){
 
         return appService.getUsersRanking(pageNumber, pageSize, sortDirection);

@@ -1,18 +1,20 @@
 package com.example.database.services;
 
 import com.example.database.dtos.*;
-import com.example.database.entities.Activity;
-import com.example.database.entities.ActivityType;
-import com.example.database.entities.AppUser;
+import com.example.database.entities.*;
 import com.example.database.repositories.ActivityRepository;
 import com.example.database.repositories.AppUserRepository;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.support.Querydsl;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ public class AppService {
 
     private final ActivityRepository activityRepository;
 
+    @PersistenceContext
     private final EntityManager entityManager;
 
     public UserStatsGetDTO getUserStatsDTO(UUID userId, Integer timePeriodOfActivities){
@@ -53,9 +56,11 @@ public class AppService {
     }
 
     public Activity createActivity(ActivityCreateDTO activityCreateDTO){
-        AppUser appUser = appUserRepository.findById(activityCreateDTO.getUserId()).orElseThrow(() ->
+
+        UUID userId = retriveCurrentLoggedInUserId();
+        AppUser appUser = appUserRepository.findById(userId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "AppUser with id: " +
-                        activityCreateDTO.getUserId() + " wasn't found")
+                        userId + " wasn't found")
         );
 
         if(!retriveCurrentLoggedInUserId().equals(appUser.getAppUserId())){
@@ -83,10 +88,10 @@ public class AppService {
     }
 
 
-    public Activity updateActivity(ActivityUpdateDTO activityUpdateDTO){
+    public Activity updateActivity(ActivityUpdateDTO activityUpdateDTO, UUID activityId){
 
-        Activity activityToUpdate = activityRepository.findById(activityUpdateDTO.getActivityId()).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity with id: " + activityUpdateDTO.getActivityId() +
+        Activity activityToUpdate = activityRepository.findById(activityId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity with id: " + activityId +
                         " wasn't found"));
         if(!retriveCurrentLoggedInUserId().equals(activityToUpdate.getAppUser().getAppUserId())){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your activities");
@@ -100,10 +105,10 @@ public class AppService {
 
     }
 
-    public List<Activity> getActivitiesForUser(ActivityPageParamsDTO activityPageParamsDTO){
+    public List<Activity> getActivitiesForUser(ActivityPageParamsDTO activityPageParamsDTO, UUID userId){
 
-        return findActivityPageForUser(activityPageParamsDTO.getUserId(),
-                activityPageParamsDTO.getFirstActivity(), activityPageParamsDTO.getLastActivity(),
+        return findActivityPageForUser(userId,
+                activityPageParamsDTO.getPageSize(), activityPageParamsDTO.getPageNumber(),
                 activityPageParamsDTO.getSortBy(),
                 activityPageParamsDTO.getSortOrder(),
                 activityPageParamsDTO.getConditions());
@@ -122,14 +127,14 @@ public class AppService {
     private List<UserRankingDTO> mapToUserRankingDTO(List<Map<String, Object>> contentToMap){
         List<UserRankingDTO> listToReturn = new ArrayList<>();
 
-        for(int i = 0; i < contentToMap.size(); i++){
-            AppUser appUser = (AppUser) contentToMap.get(i).get("appUser");
+        for (Map<String, Object> stringObjectMap : contentToMap) {
+            AppUser appUser = (AppUser) stringObjectMap.get("appUser");
             AppUserBasicDataDTO appUserBasicDataDTO = AppUserBasicDataDTO.builder()
                     .email(appUser.getEmail())
                     .firstName(appUser.getFirstName())
                     .lastName(appUser.getLastName())
                     .userId(appUser.getAppUserId()).build();
-            Long sumCalories = (Long) contentToMap.get(i).get("sumCalories");
+            Long sumCalories = (Long) stringObjectMap.get("sumCalories");
             UserRankingDTO userRankingDTO = UserRankingDTO.builder()
                     .appUserBasicDataDTO(appUserBasicDataDTO)
                     .burntCalories(sumCalories).build();
@@ -139,24 +144,41 @@ public class AppService {
         return listToReturn;
     }
 
-    private List<Activity> findActivityPageForUser(UUID userId, int firstActivity, int lastActivity,
-                                                   String sortBy, Sort.Direction sortOrder, List<String> conditions) {
-        String jpqlQuery = "SELECT a FROM Activity a WHERE a.appUser.appUserId = :userId";
 
-        if(!(conditions == null)) {
-            for (String condition : conditions) {
-                jpqlQuery += " AND " + condition;
-            }
+    private List<Activity> findActivityPageForUser(UUID userId, int pageSize, int pageNumber,
+                                                   String sortBy, Sort.Direction sortOrder, List<ActivityType> conditionsActivityType) {
+
+        PathBuilder<Activity> pathBuilder = new PathBuilder<>(Activity.class, "activity");
+        Pageable pageRequest = PageRequest.of(pageNumber, pageSize);
+        Querydsl querydsl = new Querydsl(entityManager, pathBuilder);
+        QActivity activity = QActivity.activity;
+
+        if(conditionsActivityType == null){
+            conditionsActivityType = new ArrayList<>();
+
+            conditionsActivityType.add(ActivityType.RUN);
+            conditionsActivityType.add(ActivityType.DANCE);
+            conditionsActivityType.add(ActivityType.SWIM);
+            conditionsActivityType.add(ActivityType.WORKOUT);
+            conditionsActivityType.add(ActivityType.TEAM_SPORT);
         }
 
-        jpqlQuery += " ORDER BY a." + sortBy + " " + sortOrder;
+        OrderSpecifier<?> orderSpecifier;
+        if (sortOrder == Sort.Direction.ASC) {
+            orderSpecifier = pathBuilder.getString(sortBy).asc();
+        } else {
+            orderSpecifier = pathBuilder.getString(sortBy).desc();
+        }
 
-        Query query = entityManager.createQuery(jpqlQuery);
-        query.setParameter("userId", userId);
-        query.setFirstResult(firstActivity);
-        query.setMaxResults(lastActivity - firstActivity + 1);
+        JPAQuery<Activity> query = new JPAQuery<>(entityManager).select(activity)
+                .from(activity)
+                .where(activity.appUser.appUserId.eq(userId)
+                        .and(activity.type.in(conditionsActivityType)))
+                .orderBy(orderSpecifier);
 
-        return query.getResultList();
+        return querydsl.applyPagination(pageRequest, query).fetch();
+
+
     }
 
     private UUID retriveCurrentLoggedInUserId(){

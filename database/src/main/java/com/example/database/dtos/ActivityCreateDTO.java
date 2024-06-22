@@ -12,8 +12,6 @@ import java.util.UUID;
 @Jacksonized
 public class ActivityCreateDTO {
 
-    UUID userId;
-
     Integer burntCalories;
 
     Long time;

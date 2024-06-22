@@ -12,7 +12,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.0"
+        kotlinCompilerExtensionVersion = "1.5.2"
     }
 
     defaultConfig {
@@ -55,7 +55,10 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-rxjava2:1.4.3")
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.7")
-    implementation("com.android.volley:volley:1.2.1")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -68,4 +71,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     debugImplementation(libs.androidx.ui.tooling)
+
+    implementation("org.jetbrains.kotlin:kotlin-scripting-common:1.8.21")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-jvm:1.8.21")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.8.21")
 }

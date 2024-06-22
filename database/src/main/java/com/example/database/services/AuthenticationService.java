@@ -34,7 +34,6 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(User request) {
 
-        // check if user already exist. if exist than authenticate the user
         if(userRepository.findByUsername(request.getUsername()).isPresent()) {
             return new AuthenticationResponse(null, "User already exist");
         }
