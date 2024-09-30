@@ -20,10 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,16 +33,30 @@ public class AppService {
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public UserStatsGetDTO getUserStatsDTO(UUID userId, Integer timePeriodOfActivities){
+    public UserStatsGetDTO getUserStatsDTO(String email, Integer timePeriodOfActivities){
 
-        AppUser appUserToGet = appUserRepository.findById(userId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "AppUser with id: " + userId + " wasn't found")
-        );
+        AppUser appUserToGet;
+
+        if(Objects.equals(email, "") || email.isEmpty()){
+            appUserToGet = retriveCurrentLoggedInAppUser();
+        }
+        else {
+            appUserToGet = appUserRepository.findAppUserByEmail(email).orElseThrow(() ->
+                    new ResponseStatusException(HttpStatus.NOT_FOUND, "AppUser with email: " + email + " wasn't found")
+            );
+        }
+
+        UUID userId = appUserToGet.getAppUserId();
 
         Integer avgCalories = activityRepository.getAverageCalories(userId, timePeriodOfActivities);
 
-        ActivityType favType = ActivityType.valueOf(activityRepository.getFavActivityType(userId));
+        String stringFavType = activityRepository.getFavActivityType(userId);
 
+        ActivityType favType = null;
+
+        if(stringFavType != null) {
+            favType = ActivityType.valueOf(activityRepository.getFavActivityType(userId));
+        }
         Activity lastActivity = activityRepository.getLastActivity(userId);
 
         return UserStatsGetDTO.builder()
@@ -105,14 +116,6 @@ public class AppService {
 
     }
 
-    public List<Activity> getActivitiesForUser(ActivityPageParamsDTO activityPageParamsDTO, UUID userId){
-
-        return findActivityPageForUser(userId,
-                activityPageParamsDTO.getPageSize(), activityPageParamsDTO.getPageNumber(),
-                activityPageParamsDTO.getSortBy(),
-                activityPageParamsDTO.getSortOrder(),
-                activityPageParamsDTO.getConditions());
-    }
 
     public List<UserRankingDTO> getUsersRanking(int pageNumber, int pageSize, Sort.Direction sortDirection){
         Sort sort = Sort.by(sortDirection, "sumCalories");
@@ -144,6 +147,15 @@ public class AppService {
         return listToReturn;
     }
 
+    public List<Activity> getActivitiesForUser(ActivityPageParamsDTO activityPageParamsDTO, UUID userId){
+
+        return findActivityPageForUser(userId,
+                activityPageParamsDTO.getPageSize(), activityPageParamsDTO.getPageNumber(),
+                activityPageParamsDTO.getSortBy(),
+                activityPageParamsDTO.getSortOrder(),
+                activityPageParamsDTO.getConditions());
+    }
+
 
     private List<Activity> findActivityPageForUser(UUID userId, int pageSize, int pageNumber,
                                                    String sortBy, Sort.Direction sortOrder, List<ActivityType> conditionsActivityType) {
@@ -155,7 +167,6 @@ public class AppService {
 
         if(conditionsActivityType == null){
             conditionsActivityType = new ArrayList<>();
-
             conditionsActivityType.add(ActivityType.RUN);
             conditionsActivityType.add(ActivityType.DANCE);
             conditionsActivityType.add(ActivityType.SWIM);
@@ -183,9 +194,20 @@ public class AppService {
 
     private UUID retriveCurrentLoggedInUserId(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        AppUser appUser = appUserRepository.findAppUserByEmail(email);
+        AppUser appUser = appUserRepository.findAppUserByEmail(email).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "AppUser with email: " + email + " wasn't found")
+        );
 
         return appUser.getAppUserId();
+    }
+
+    private AppUser retriveCurrentLoggedInAppUser(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser appUser = appUserRepository.findAppUserByEmail(email).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "AppUser with email: " + email + " wasn't found")
+        );
+
+        return appUser;
     }
 
 }

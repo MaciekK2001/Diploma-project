@@ -59,6 +59,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha03")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -67,12 +68,9 @@ dependencies {
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.ui.tooling.preview.android)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.security.crypto.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     debugImplementation(libs.androidx.ui.tooling)
-
-    implementation("org.jetbrains.kotlin:kotlin-scripting-common:1.8.21")
-    implementation("org.jetbrains.kotlin:kotlin-scripting-jvm:1.8.21")
-    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.8.21")
 }

@@ -23,7 +23,3 @@ VALUES
 
 END
 $$;
-
---SELECT AVG(Activity.burnt_calories) FROM Activity
---WHERE Activity.app_user_id = '6c84fb95-12c4-11ec-82a8-0242ac130001'
---AND Activity.created_at >= NOW() - INTERVAL '7' DAY

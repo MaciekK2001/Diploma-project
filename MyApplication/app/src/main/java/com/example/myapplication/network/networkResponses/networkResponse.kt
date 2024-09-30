@@ -2,14 +2,12 @@ package com.example.myapplication.network.networkResponses
 
 import com.google.gson.annotations.SerializedName
 
-class RegistrationResponse(
+data class AuthResponse(
 
-    @SerializedName("response")
-    var response: String,
-
-    @SerializedName("error_message")
-    var errorMessage: String,
+    @SerializedName("message")
+    var message: String,
 
     @SerializedName("token")
     var token: String
+
 )

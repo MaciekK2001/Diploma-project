@@ -9,20 +9,25 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.myapplication.screen.ScreenMain
+import com.example.myapplication.jwt.TokenManager
+import com.example.myapplication.jwt.TokenManagerHolder
+import com.example.myapplication.screen.Navigation
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val tokenManager = TokenManager.getInstance(this)
+        TokenManagerHolder.initialize(tokenManager)
         setContent {
             MyApplicationTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ScreenMain()
+                    Navigation()
                 }
             }
         }
@@ -33,6 +38,6 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun DefaultPreview() {
     MyApplicationTheme {
-        ScreenMain()
+        Navigation()
     }
 }

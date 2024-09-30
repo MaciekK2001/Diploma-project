@@ -19,7 +19,7 @@ Content-Type: application/json
 ####
 POST  http://localhost:8080/api/activities
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MTg0NDcxNjksImV4cCI6MTcxODUzMzU2OX0.ijzjVWTarUNF3CWuJbvgOQ9KwuvjkipFuijmi9teTtQMn-QflgxlloMxKDcoiELy
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MjYwODQ4MjQsImV4cCI6MTcyNjE3MTIyNH0.GWObt1SLGwz8EeYEEk2vlF-FDg2_yUsmpkUqAk-aNbsOVKErmWEyCHjMvr1EN255
 
 
 {
@@ -41,11 +41,25 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAb
   "sortBy": "createdAt"
 }
 ###
-GET  http://localhost:8080/api/users/6c84fb95-12c4-11ec-82a8-0242ac130001?timePeriodOfActivities=30
+GET  http://localhost:8080/api/users?email=john@example.com&timePeriodOfActivities=200
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MTg0NDcxNjksImV4cCI6MTcxODUzMzU2OX0.ijzjVWTarUNF3CWuJbvgOQ9KwuvjkipFuijmi9teTtQMn-QflgxlloMxKDcoiELy
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MjQ4ODU3ODAsImV4cCI6MTcyNDk3MjE4MH0.7G7TTlPXMpCEVV_A74fxeWpIU-4AB4j0NRzPTXO6ch3jmyV_HFp4XbHmpr4FE8kH
 
 ###
 GET  http://localhost:8080/api/users/ranking?pageSize=4&pageNumber=0&sortDirection=DESC
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MTgyOTU2MzMsImV4cCI6MTcxODM4MjAzM30.1fknx9DShSVlvsHEx30HwYeJSQ3AS3HLtJ4Mi-KmxWIe7Xejd0dvqqZDtNU5W1G4
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MjIzNTIyMTYsImV4cCI6MTcyMjQzODYxNn0.3VjXdxocjFHGIBJ2YG-kEZC0dOp9MWQ6Pb1pWIcSQW3OSjIE6YZbW7Hinn3x3yh_
+
+
+###
+POST  http://localhost:8080/api/activities/62ca19f3-1315-44d7-b59e-02fd139fa68b
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtYWNpZWsta3dpYXRrb3dza2lAbzIucGwiLCJpYXQiOjE3MjIzNTIyMTYsImV4cCI6MTcyMjQzODYxNn0.3VjXdxocjFHGIBJ2YG-kEZC0dOp9MWQ6Pb1pWIcSQW3OSjIE6YZbW7Hinn3x3yh_
+
+{
+  "pageSize": "4",
+  "pageNumber": "0",
+  "sortBy": "createdAt",
+  "sortOrder": "ASC",
+  "conditions": ["WORKOUT", "SWIM"]
+}

@@ -38,11 +38,11 @@ public class AppController {
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
-    @GetMapping("/api/users/{userId}")
-    public UserStatsGetDTO getUser(@PathVariable UUID userId,
-                                   @RequestParam Integer timePeriodOfActivities){
+    @GetMapping("/api/users")
+    public UserStatsGetDTO getUser(@RequestParam(defaultValue = "") String email,
+                                   @RequestParam(defaultValue = "1000000") Integer timePeriodOfActivities){
 
-        return appService.getUserStatsDTO(userId, timePeriodOfActivities);
+        return appService.getUserStatsDTO(email, timePeriodOfActivities);
     }
 
     @PostMapping("/api/activities")
@@ -64,7 +64,7 @@ public class AppController {
         return appService.updateActivity(activityUpdateDTO, activityId);
     }
 
-    @GetMapping("/api/activities/{userId}")
+    @PostMapping("/api/activities/{userId}")//sprawdzic
     public List<Activity> getActivities(@RequestBody ActivityPageParamsDTO activityPageParamsDTO,
                                         @PathVariable UUID userId){
         return appService.getActivitiesForUser(activityPageParamsDTO, userId);
