@@ -2,6 +2,7 @@ package com.example.database.services;
 
 import com.example.database.dtos.*;
 import com.example.database.entities.*;
+import com.example.database.entities.QActivity;
 import com.example.database.repositories.ActivityRepository;
 import com.example.database.repositories.AppUserRepository;
 import com.querydsl.core.types.OrderSpecifier;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.*;
 
@@ -79,7 +81,7 @@ public class AppService {
         }
 
         return activityRepository.save(Activity.builder()
-                .type(activityCreateDTO.getType())
+                .activityType(activityCreateDTO.getType())
                 .time(activityCreateDTO.getTime())
                 .burntCalories(activityCreateDTO.getBurntCalories())
                 .appUser(appUser).build());
@@ -108,7 +110,7 @@ public class AppService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your activities");
         }
 
-        activityToUpdate.setType(activityUpdateDTO.getType());
+        activityToUpdate.setActivityType(activityUpdateDTO.getType());
         activityToUpdate.setTime(activityUpdateDTO.getTime());
         activityToUpdate.setBurntCalories(activityUpdateDTO.getBurntCalories());
 
@@ -184,7 +186,7 @@ public class AppService {
         JPAQuery<Activity> query = new JPAQuery<>(entityManager).select(activity)
                 .from(activity)
                 .where(activity.appUser.appUserId.eq(userId)
-                        .and(activity.type.in(conditionsActivityType)))
+                        .and(activity.activityType.in(conditionsActivityType)))
                 .orderBy(orderSpecifier);
 
         return querydsl.applyPagination(pageRequest, query).fetch();

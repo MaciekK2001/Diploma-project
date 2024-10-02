@@ -1,4 +1,4 @@
-package com.example.myapplication.screen.viewModels
+package com.example.myapplication.ui.viewModels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -27,11 +27,11 @@ class UserScreenViewModel : ViewModel() {
     }
     private fun getUser(){
         viewModelScope.launch {
-            delay(2000) //TEST
             val responseUserStatsGetDTO: UserStatsGetDTO? =
                 ApiClient.api.getUser("", null)
 
             if(responseUserStatsGetDTO != null){
+                delay(2000)
                 _userStatsGetDTO.update { currentState ->
                     val newState = currentState.copy(
                         appUser = responseUserStatsGetDTO.appUser,

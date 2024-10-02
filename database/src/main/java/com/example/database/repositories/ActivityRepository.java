@@ -14,9 +14,9 @@ public interface ActivityRepository extends JpaRepository<Activity, UUID> {
             "AND a.created_at >= NOW() - ?2 * INTERVAL '1 day'", nativeQuery = true)
     Integer getAverageCalories(UUID userId, Integer timePeriod);
 
-    @Query(value = "SELECT a.type " +
+    @Query(value = "SELECT a.activity_type " +
             "FROM activity a WHERE a.app_user_id = :userId " +
-            "GROUP BY type " +
+            "GROUP BY activity_type " +
             "ORDER BY COUNT(a.activity_id) DESC " +
             "FETCH FIRST 1 ROW ONLY;", nativeQuery = true)
     String getFavActivityType(UUID userId);

@@ -12,7 +12,7 @@ VALUES
     ('6c84fb95-12c4-11ec-82a8-0242ac130005', 'David', 'Martinez', 'Ut labore et dolore magna aliqua', 'david@example.com');
 
 -- Wstawianie przykładowych danych do tabeli activity
-INSERT INTO activity (activity_id, app_user_id, burnt_calories, time, created_at, type)
+INSERT INTO activity (activity_id, app_user_id, burnt_calories, time, created_at, activity_type)
 VALUES
     ('6c84fbad-12c4-11ec-82a8-0242ac130001', '6c84fb95-12c4-11ec-82a8-0242ac130001', 500, 360000, CURRENT_TIMESTAMP, 'WORKOUT'),
     ('6c84fbad-12c4-11ec-82a8-0242ac130002', '6c84fb95-12c4-11ec-82a8-0242ac130002', 300, 180000, CURRENT_TIMESTAMP, 'RUN'),

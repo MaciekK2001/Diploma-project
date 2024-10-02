@@ -37,5 +37,5 @@ public class Activity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ActivityType type;
+    private ActivityType activityType;
 }

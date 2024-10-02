@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.jwt.TokenManager
 import com.example.myapplication.jwt.TokenManagerHolder
-import com.example.myapplication.screen.Navigation
+import com.example.myapplication.ui.screen.utils.Navigation
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 
