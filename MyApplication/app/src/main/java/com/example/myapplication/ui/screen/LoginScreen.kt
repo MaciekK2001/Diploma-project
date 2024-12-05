@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.screen
 
 import LoginViewModel
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +18,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -34,12 +37,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.myapplication.MainActivity
+import com.example.myapplication.jwt.TokenManagerHolder
 
 @Composable
 fun LoginPage(navController: NavController,
               loginViewModel: LoginViewModel = viewModel()) {
 
-    val loginSuccess by loginViewModel.loginSuccess
+    val loginSuccess by loginViewModel.loginSuccess.collectAsState()
+    val context = LocalContext.current
+    val errorResponse by loginViewModel.errorResponse.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize(),
     contentAlignment = Alignment.Center) {
@@ -96,6 +103,12 @@ fun LoginPage(navController: NavController,
                 }
             }
 
+            if(errorResponse != null){
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(text = errorResponse!!.error,
+                color = Color.Red)
+            }
+
             Spacer(modifier = Modifier.height(20.dp))
             ClickableText(
                 text = AnnotatedString("Forgot password?"),
@@ -110,7 +123,9 @@ fun LoginPage(navController: NavController,
 
         LaunchedEffect(loginSuccess) {
             if (loginSuccess) {
-                navController.navigate("user_screen")
+                val intent = Intent(context, MainActivity::class.java)
+                intent.putExtra("TOKEN", TokenManagerHolder.tokenManager.getJwtToken())
+                context.startActivity(intent)
             }
         }
 

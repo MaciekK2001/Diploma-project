@@ -22,8 +22,8 @@ public class Activity {
     private UUID activityId;
 
     @ManyToOne
-    @JoinColumn(name = "appUserId")
-    private AppUser appUser;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false)
     private Integer burntCalories;

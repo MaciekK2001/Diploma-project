@@ -25,11 +25,6 @@ interface OpenApiAuthService {
         @Body registrationRequest: RegistrationRequest
     ): Response<AuthResponse>
 
-    @Headers("Content-Type: application/json")
-    @GET("users")
-    suspend fun getUser(
-        @Query("email") email: String?,
-        @Query("timePeriodOfAvtivities") timePeriodOfActivities: Int?,
-        @Header("Authorization") token: String
-    ): Response<UserStatsGetDTO>
 }
+
+

@@ -2,17 +2,15 @@ DO
 $$
 
 BEGIN
--- Wstawianie przykładowych danych do tabeli app_user
-INSERT INTO app_user (app_user_id, first_name, last_name, about,  email)
+INSERT INTO users (user_id, first_name, last_name, about, email, role)
 VALUES
-    ('6c84fb95-12c4-11ec-82a8-0242ac130001', 'John', 'Doe', 'Lorem ipsum dolor sit amet', 'john@example.com'),
-    ('6c84fb95-12c4-11ec-82a8-0242ac130002', 'Alice', 'Smith', 'Consectetur adipiscing elit', 'alice@example.com'),
-    ('6c84fb95-12c4-11ec-82a8-0242ac130003', 'Michael', 'Johnson', 'Sed do eiusmod tempor incididunt', 'michael@example.com'),
-    ('6c84fb95-12c4-11ec-82a8-0242ac130004', 'Emily', 'Brown', NULL, 'emily@example.com'),
-    ('6c84fb95-12c4-11ec-82a8-0242ac130005', 'David', 'Martinez', 'Ut labore et dolore magna aliqua', 'david@example.com');
+    ('6c84fb95-12c4-11ec-82a8-0242ac130001', 'John', 'Doe', 'Lorem ipsum dolor sit amet', 'john@example.com', 'USER'),
+    ('6c84fb95-12c4-11ec-82a8-0242ac130002', 'Alice', 'Smith', 'Consectetur adipiscing elit', 'alice@example.com', 'USER'),
+    ('6c84fb95-12c4-11ec-82a8-0242ac130003', 'Michael', 'Johnson', 'Sed do eiusmod tempor incididunt', 'michael@example.com', 'USER'),
+    ('6c84fb95-12c4-11ec-82a8-0242ac130004', 'Emily', 'Brown', NULL, 'emily@example.com', 'USER'),
+    ('6c84fb95-12c4-11ec-82a8-0242ac130005', 'David', 'Martinez', 'Ut labore et dolore magna aliqua', 'david@example.com', 'USER');
 
--- Wstawianie przykładowych danych do tabeli activity
-INSERT INTO activity (activity_id, app_user_id, burnt_calories, time, created_at, activity_type)
+INSERT INTO activity (activity_id, user_id, burnt_calories, time, created_at, activity_type)
 VALUES
     ('6c84fbad-12c4-11ec-82a8-0242ac130001', '6c84fb95-12c4-11ec-82a8-0242ac130001', 500, 360000, CURRENT_TIMESTAMP, 'WORKOUT'),
     ('6c84fbad-12c4-11ec-82a8-0242ac130002', '6c84fb95-12c4-11ec-82a8-0242ac130002', 300, 180000, CURRENT_TIMESTAMP, 'RUN'),

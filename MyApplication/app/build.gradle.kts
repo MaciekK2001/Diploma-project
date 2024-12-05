@@ -41,6 +41,9 @@ android {
 }
 
 dependencies {
+
+    implementation ("androidx.room:room-runtime:2.6.1")
+    annotationProcessor ("androidx.room:room-compiler:2.6.1")
     implementation("androidx.compose.material3:material3:1.0.1")
     implementation("androidx.compose.material:material:1.4.3")
     implementation("androidx.compose.foundation:foundation:1.4.3")
@@ -60,6 +63,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha03")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

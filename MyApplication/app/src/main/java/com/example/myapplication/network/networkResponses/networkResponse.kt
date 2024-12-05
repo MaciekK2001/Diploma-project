@@ -11,3 +11,11 @@ data class AuthResponse(
     var token: String
 
 )
+
+data class ErrorResponse(
+    @SerializedName("error")
+    var error: String,
+
+    @SerializedName("status")
+    var status: Int
+)

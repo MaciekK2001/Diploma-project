@@ -2,26 +2,30 @@ package com.example.database.config;
 
 import com.example.database.filters.JwtAuthenticationFilter;
 import com.example.database.services.UserDetailsServiceImp;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig{
 
     private final UserDetailsServiceImp userDetailsServiceImp;
 
@@ -51,7 +55,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 ).userDetailsService(userDetailsServiceImp)
                 .sessionManagement(session->session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))//sprawdzić
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(l->l
                         .logoutUrl("/logout")
@@ -70,6 +74,24 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public CustomAuthenticationFailureHandler customAuthenticationFailureHandler() {
+        return new CustomAuthenticationFailureHandler();
+    }
+
+    public static class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
+        @Override
+        public void onAuthenticationFailure(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            AuthenticationException exception) throws IOException, ServletException {
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+            response.getWriter().write("Invalid username or password! Please try again.");
+        }
     }
 
 

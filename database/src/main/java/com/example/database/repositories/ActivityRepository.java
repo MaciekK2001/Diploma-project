@@ -10,24 +10,24 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface ActivityRepository extends JpaRepository<Activity, UUID> {
-    @Query(value = "SELECT AVG(a.burnt_calories) FROM Activity a WHERE a.app_user_id = ?1 " +
+    @Query(value = "SELECT AVG(a.burnt_calories) FROM Activity a WHERE a.user_id = ?1 " +
             "AND a.created_at >= NOW() - ?2 * INTERVAL '1 day'", nativeQuery = true)
     Integer getAverageCalories(UUID userId, Integer timePeriod);
 
     @Query(value = "SELECT a.activity_type " +
-            "FROM activity a WHERE a.app_user_id = :userId " +
+            "FROM activity a WHERE a.user_id = :userId " +
             "GROUP BY activity_type " +
             "ORDER BY COUNT(a.activity_id) DESC " +
             "FETCH FIRST 1 ROW ONLY;", nativeQuery = true)
     String getFavActivityType(UUID userId);
 
-    @Query(value = "SELECT * FROM Activity a WHERE a.app_user_id = ?1" +
+    @Query(value = "SELECT * FROM Activity a WHERE a.user_id = ?1" +
             " ORDER BY a.created_at DESC " +
             "FETCH FIRST 1 ROW ONLY",nativeQuery = true)
     Activity getLastActivity(UUID userId);
 
-    @Query(value = "SELECT  a.appUser AS appUser,  SUM(a.burntCalories) AS sumCalories FROM Activity a " +
-            "GROUP BY a.appUser")
+    @Query(value = "SELECT  a.user AS user,  SUM(a.burntCalories) AS sumCalories FROM Activity a " +
+            "GROUP BY a.user")
     Page<Map<String, Object>> getActivityUsersRanking(Pageable pageable);
 
 }

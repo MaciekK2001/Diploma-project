@@ -31,7 +31,6 @@ class UserScreenViewModel : ViewModel() {
                 ApiClient.api.getUser("", null)
 
             if(responseUserStatsGetDTO != null){
-                delay(2000)
                 _userStatsGetDTO.update { currentState ->
                     val newState = currentState.copy(
                         appUser = responseUserStatsGetDTO.appUser,

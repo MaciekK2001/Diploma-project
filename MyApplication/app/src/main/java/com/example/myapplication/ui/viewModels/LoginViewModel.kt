@@ -1,26 +1,33 @@
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.network.ApiClient
+import com.example.myapplication.network.networkResponses.AuthResponse
+import com.example.myapplication.network.networkResponses.ErrorResponse
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class LoginViewModel : ViewModel() {
-    var loginSuccess = mutableStateOf(false)
-        private set
+
+    private val _loginSuccess = MutableStateFlow(false)
+    val loginSuccess: StateFlow<Boolean> = _loginSuccess.asStateFlow()
+
+    private val _errorResponse = MutableStateFlow<ErrorResponse?>(null)
+    val errorResponse: StateFlow<ErrorResponse?> = _errorResponse.asStateFlow()
+
 
     fun login(email: String, password: String) {
+        _loginSuccess.value = false
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val response = ApiClient.api.login(email, password)
-                if(response){
-                    loginSuccess.value = true
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    loginSuccess.value = false
-                }
+            val response = ApiClient.api.login(email, password)
+            if(response is ErrorResponse){
+                _errorResponse.value = response
+            }
+            if(response is AuthResponse){
+                _loginSuccess.value = true
+                _errorResponse.value = null
             }
         }
     }

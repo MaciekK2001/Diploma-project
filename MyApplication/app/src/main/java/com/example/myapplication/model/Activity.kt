@@ -1,4 +1,4 @@
-package com.example.myapplication.entities
+package com.example.myapplication.model
 
 import java.util.Date
 import java.util.UUID

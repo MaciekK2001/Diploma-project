@@ -4,7 +4,7 @@ import com.example.database.dtos.*;
 import com.example.database.entities.*;
 import com.example.database.entities.QActivity;
 import com.example.database.repositories.ActivityRepository;
-import com.example.database.repositories.AppUserRepository;
+import com.example.database.repositories.UserRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -28,7 +28,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AppService {
 
-    private final AppUserRepository appUserRepository;
+    private final UserRepository userRepository;
 
     private final ActivityRepository activityRepository;
 
@@ -37,18 +37,18 @@ public class AppService {
 
     public UserStatsGetDTO getUserStatsDTO(String email, Integer timePeriodOfActivities){
 
-        AppUser appUserToGet;
+        User userToGet;
 
         if(Objects.equals(email, "") || email.isEmpty()){
-            appUserToGet = retriveCurrentLoggedInAppUser();
+            userToGet = retriveCurrentLoggedInUser();
         }
         else {
-            appUserToGet = appUserRepository.findAppUserByEmail(email).orElseThrow(() ->
+            userToGet = userRepository.findUserByEmail(email).orElseThrow(() ->
                     new ResponseStatusException(HttpStatus.NOT_FOUND, "AppUser with email: " + email + " wasn't found")
             );
         }
 
-        UUID userId = appUserToGet.getAppUserId();
+        UUID userId = userToGet.getUserId();
 
         Integer avgCalories = activityRepository.getAverageCalories(userId, timePeriodOfActivities);
 
@@ -62,7 +62,7 @@ public class AppService {
         Activity lastActivity = activityRepository.getLastActivity(userId);
 
         return UserStatsGetDTO.builder()
-                .appUser(appUserToGet)
+                .user(userToGet)
                 .avgCalories(avgCalories)
                 .favActivityType(favType)
                 .lastActivity(lastActivity).build();
@@ -71,12 +71,12 @@ public class AppService {
     public Activity createActivity(ActivityCreateDTO activityCreateDTO){
 
         UUID userId = retriveCurrentLoggedInUserId();
-        AppUser appUser = appUserRepository.findById(userId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "AppUser with id: " +
+        User user = userRepository.findUserByUserId(userId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id: " +
                         userId + " wasn't found")
         );
 
-        if(!retriveCurrentLoggedInUserId().equals(appUser.getAppUserId())){
+        if(!retriveCurrentLoggedInUserId().equals(user.getUserId())){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only create activities for yourself");
         }
 
@@ -84,7 +84,7 @@ public class AppService {
                 .activityType(activityCreateDTO.getType())
                 .time(activityCreateDTO.getTime())
                 .burntCalories(activityCreateDTO.getBurntCalories())
-                .appUser(appUser).build());
+                .user(user).build());
 
     }
 
@@ -93,7 +93,7 @@ public class AppService {
         Activity activityToDelete = activityRepository.findById(activityId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity with id: " + activityId +
                         " wasn't found"));
-        if(!retriveCurrentLoggedInUserId().equals(activityToDelete.getAppUser().getAppUserId())){
+        if(!retriveCurrentLoggedInUserId().equals(activityToDelete.getUser().getUserId())){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your activities");
         }
 
@@ -106,7 +106,7 @@ public class AppService {
         Activity activityToUpdate = activityRepository.findById(activityId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity with id: " + activityId +
                         " wasn't found"));
-        if(!retriveCurrentLoggedInUserId().equals(activityToUpdate.getAppUser().getAppUserId())){
+        if(!retriveCurrentLoggedInUserId().equals(activityToUpdate.getUser().getUserId())){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your activities");
         }
 
@@ -133,12 +133,12 @@ public class AppService {
         List<UserRankingDTO> listToReturn = new ArrayList<>();
 
         for (Map<String, Object> stringObjectMap : contentToMap) {
-            AppUser appUser = (AppUser) stringObjectMap.get("appUser");
+            User user = (User) stringObjectMap.get("user");
             AppUserBasicDataDTO appUserBasicDataDTO = AppUserBasicDataDTO.builder()
-                    .email(appUser.getEmail())
-                    .firstName(appUser.getFirstName())
-                    .lastName(appUser.getLastName())
-                    .userId(appUser.getAppUserId()).build();
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .userId(user.getUserId()).build();
             Long sumCalories = (Long) stringObjectMap.get("sumCalories");
             UserRankingDTO userRankingDTO = UserRankingDTO.builder()
                     .appUserBasicDataDTO(appUserBasicDataDTO)
@@ -152,7 +152,8 @@ public class AppService {
     public List<Activity> getActivitiesForUser(ActivityPageParamsDTO activityPageParamsDTO, UUID userId){
 
         return findActivityPageForUser(userId,
-                activityPageParamsDTO.getPageSize(), activityPageParamsDTO.getPageNumber(),
+                activityPageParamsDTO.getPageSize(),
+                activityPageParamsDTO.getPageNumber(),
                 activityPageParamsDTO.getSortBy(),
                 activityPageParamsDTO.getSortOrder(),
                 activityPageParamsDTO.getConditions());
@@ -185,31 +186,30 @@ public class AppService {
 
         JPAQuery<Activity> query = new JPAQuery<>(entityManager).select(activity)
                 .from(activity)
-                .where(activity.appUser.appUserId.eq(userId)
+                .where(activity.user.userId.eq(userId)
                         .and(activity.activityType.in(conditionsActivityType)))
                 .orderBy(orderSpecifier);
 
         return querydsl.applyPagination(pageRequest, query).fetch();
-
-
     }
 
     private UUID retriveCurrentLoggedInUserId(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        AppUser appUser = appUserRepository.findAppUserByEmail(email).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "AppUser with email: " + email + " wasn't found")
+        User user = userRepository.findByUsername(email).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email: " + email + " wasn't found")
         );
 
-        return appUser.getAppUserId();
+        return user.getUserId();
     }
 
-    private AppUser retriveCurrentLoggedInAppUser(){
+    private User retriveCurrentLoggedInUser(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        AppUser appUser = appUserRepository.findAppUserByEmail(email).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "AppUser with email: " + email + " wasn't found")
+        User user = userRepository.findUserByEmail(email).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email: " + email + " wasn't found")
         );
 
-        return appUser;
+        return user;
     }
+
 
 }
