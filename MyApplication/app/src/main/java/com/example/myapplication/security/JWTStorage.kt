@@ -1,4 +1,4 @@
-package com.example.myapplication.jwt
+package com.example.myapplication.security
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
@@ -56,7 +56,7 @@ object TokenManagerHolder {
         this.tokenManager = tokenManager
     }
 
-    fun retriveTokenManager(): TokenManager {
+    fun retrieveTokenManager(): TokenManager {
         if (!::tokenManager.isInitialized) {
             throw IllegalStateException("TokenManager is not initialized")
         }

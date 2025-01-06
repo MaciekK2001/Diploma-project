@@ -38,18 +38,22 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.myapplication.MainActivity
-import com.example.myapplication.jwt.TokenManagerHolder
+import com.example.myapplication.network.networkResponses.ApiResponse
+import com.example.myapplication.security.TokenManagerHolder
 
 @Composable
-fun LoginPage(navController: NavController,
-              loginViewModel: LoginViewModel = viewModel()) {
+fun LoginPage(
+    navController: NavController,
+    loginViewModel: LoginViewModel = viewModel()
+) {
 
-    val loginSuccess by loginViewModel.loginSuccess.collectAsState()
     val context = LocalContext.current
-    val errorResponse by loginViewModel.errorResponse.collectAsState()
+    val loginResponse by loginViewModel.loginResponse.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize(),
-    contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         ClickableText(
             text = AnnotatedString("Sign up here"),
             modifier = Modifier
@@ -72,11 +76,14 @@ fun LoginPage(navController: NavController,
             val email = remember { mutableStateOf(TextFieldValue()) }
             val password = remember { mutableStateOf(TextFieldValue()) }
 
-            Text(text = "Login", style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Cursive))
+            Text(
+                text = "Login",
+                style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Cursive)
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
             TextField(
-                label = { Text(text = "Email") },
+                label = { Text(text = "Username") },
                 value = email.value,
                 onValueChange = { email.value = it })
 
@@ -103,10 +110,12 @@ fun LoginPage(navController: NavController,
                 }
             }
 
-            if(errorResponse != null){
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(text = errorResponse!!.error,
-                color = Color.Red)
+            if (loginResponse is ApiResponse.Error) {
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = (loginResponse as ApiResponse.Error).message,
+                    color = Color.Red
+                )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -121,8 +130,8 @@ fun LoginPage(navController: NavController,
             )
         }
 
-        LaunchedEffect(loginSuccess) {
-            if (loginSuccess) {
+        LaunchedEffect(loginResponse is ApiResponse.Success) {
+            if (loginResponse is ApiResponse.Success) {
                 val intent = Intent(context, MainActivity::class.java)
                 intent.putExtra("TOKEN", TokenManagerHolder.tokenManager.getJwtToken())
                 context.startActivity(intent)

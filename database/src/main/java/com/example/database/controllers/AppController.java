@@ -39,10 +39,10 @@ public class AppController {
     }
 
     @GetMapping("/api/users")
-    public UserStatsGetDTO getUser(@RequestParam(defaultValue = "") String email,
+    public UserStatsGetDTO getUser(@RequestParam(defaultValue = "") String username,
                                    @RequestParam(defaultValue = "1000000") Integer timePeriodOfActivities){
 
-        return appService.getUserStatsDTO(email, timePeriodOfActivities);
+        return appService.getUserStatsDTO(username, timePeriodOfActivities);
     }
 
     @PostMapping("/api/activities")
@@ -52,22 +52,27 @@ public class AppController {
     }
 
     @DeleteMapping("/api/activities/{activityId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteActivity(@PathVariable UUID activityId){
-        appService.deleteActivity(activityId);
+    @ResponseStatus(HttpStatus.OK)
+    public String deleteActivity(@PathVariable UUID activityId){
+        return appService.deleteActivity(activityId);
     }
 
     @PutMapping("/api/activities/{activityId}")
     @ResponseStatus(HttpStatus.OK)
-    public Activity updateActivity(@RequestBody ActivityUpdateDTO activityUpdateDTO,
+    public Activity updateActivity(@RequestBody ActivityCreateDTO activityCreateDTO,
                                     @PathVariable UUID activityId){
-        return appService.updateActivity(activityUpdateDTO, activityId);
+        return appService.updateActivity(activityCreateDTO, activityId);
     }
 
-    @PostMapping("/api/activities/{userId}")//sprawdzic
-    public List<Activity> getActivities(@RequestBody ActivityPageParamsDTO activityPageParamsDTO,
+    @GetMapping("/api/activities")
+    public List<Activity> getActivities(@ModelAttribute ActivityPageParams activityPageParams){
+        return appService.getActivitiesForUser(activityPageParams, null);
+    }
+
+    @GetMapping("/api/activities/{userId}")
+    public List<Activity> getActivities(@ModelAttribute ActivityPageParams activityPageParams,
                                         @PathVariable UUID userId){
-        return appService.getActivitiesForUser(activityPageParamsDTO, userId);
+        return appService.getActivitiesForUser(activityPageParams, userId);
     }
 
     @GetMapping("/api/users/ranking")
@@ -77,5 +82,11 @@ public class AppController {
 
         return appService.getUsersRanking(pageNumber, pageSize, sortDirection);
     }
+
+    @GetMapping("/api/userBasicData")
+    public UserBasicDataDTO getUserData(){
+        return appService.getUserDataDTO();
+    }
+
 
 }

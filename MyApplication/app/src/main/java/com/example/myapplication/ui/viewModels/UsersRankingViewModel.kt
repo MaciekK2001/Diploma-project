@@ -14,7 +14,7 @@ class UsersRankingViewModel() : ViewModel() {
     val listOfUsers: StateFlow<List<UserRankingDTO>> = _listOfUsers
 
     private var currentPage = 0
-    private var pageSize = 2
+    private var pageSize = 5
     private var sortDirection = "DESC"
 
     fun loadNextPage() {

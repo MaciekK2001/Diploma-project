@@ -1,16 +1,12 @@
 package com.example.myapplication.network
 
-import com.example.myapplication.dtos.UserStatsGetDTO
 import com.example.myapplication.network.networkRequests.LoginRequest
 import com.example.myapplication.network.networkRequests.RegistrationRequest
 import com.example.myapplication.network.networkResponses.AuthResponse
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface OpenApiAuthService {
     @Headers("Content-Type: application/json")

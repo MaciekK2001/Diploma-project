@@ -12,12 +12,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.jwt.TokenManager
-import com.example.myapplication.jwt.TokenManagerHolder
+import com.example.myapplication.security.TokenManager
+import com.example.myapplication.security.TokenManagerHolder
+import com.example.myapplication.security.UserData
+import com.example.myapplication.security.UserDataHolder
 import com.example.myapplication.ui.screen.utils.NavigationDrawer
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,10 +30,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val token = intent.getStringExtra("TOKEN")
         val tokenManager = TokenManager.getInstance(this)
+        val userData = UserData.getInstance(this)
+        UserDataHolder.initialize(userData)
         TokenManagerHolder.initialize(tokenManager)
         if (token != null) {
             Log.d("MainActivity", "Received token: $token")
             TokenManagerHolder.tokenManager.saveJwtToken(token)
+        }
+        lifecycleScope.launch {
+            userData.getData()
         }
 
         setContent {
@@ -42,7 +51,7 @@ class MainActivity : AppCompatActivity() {
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val scope = rememberCoroutineScope()
 
-                    NavigationDrawer(scope, drawerState, viewModel(), navController)
+                    NavigationDrawer(scope, drawerState, navController)
                 }
             }
         }

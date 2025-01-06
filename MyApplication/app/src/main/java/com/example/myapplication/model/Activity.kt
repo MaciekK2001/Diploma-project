@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class Activity(
     val activityId: UUID,
-    val appUser: AppUser,
+    val user: User,
     val burntCalories: Int,
     val time: Long,
     val createdAt: Date,

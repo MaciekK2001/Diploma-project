@@ -10,6 +10,7 @@ data class User (
     @PrimaryKey val userId: UUID,
     val firstName: String,
     val lastName: String,
+    val username: String,
     val about: String,
     val email: String,
     val joinedAt: Date

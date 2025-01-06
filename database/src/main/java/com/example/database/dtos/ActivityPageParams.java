@@ -7,12 +7,11 @@ import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
-import java.util.UUID;
 
 @Value
 @Builder
 @Jacksonized
-public class ActivityPageParamsDTO {
+public class ActivityPageParams {
 
     Integer pageSize;
 

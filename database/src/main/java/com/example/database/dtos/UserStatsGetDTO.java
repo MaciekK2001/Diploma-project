@@ -2,8 +2,6 @@ package com.example.database.dtos;
 
 import com.example.database.entities.Activity;
 import com.example.database.entities.ActivityType;
-import com.example.database.entities.AppUser;
-import com.example.database.entities.User;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -13,7 +11,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class UserStatsGetDTO {
 
-    User user;
+    UserDTO userDTO;
 
     Integer avgCalories;
 

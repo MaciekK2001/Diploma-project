@@ -9,6 +9,5 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class UserRankingDTO {
     AppUserBasicDataDTO appUserBasicDataDTO;
-
     Long burntCalories;
 }

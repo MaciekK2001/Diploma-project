@@ -2,7 +2,6 @@ package com.example.database.config;
 
 import com.example.database.entities.User;
 import com.example.database.repositories.UserRepository;
-import com.example.database.services.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
@@ -13,8 +12,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.util.UUID;
-
 @Component
 @RequiredArgsConstructor
 public class WebSocketEventListener {
@@ -22,8 +19,6 @@ public class WebSocketEventListener {
     private final WebSocketSessionManager webSocketSessionManager;
 
     private final UserRepository userRepository;
-
-    private final JwtService jwtService;
 
     @EventListener
     private void handleSessionConnected(SessionConnectEvent event) {

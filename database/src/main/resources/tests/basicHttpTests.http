@@ -1,4 +1,4 @@
-@authToken = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJNYWNpZWtLMjAwMSIsImlhdCI6MTczMzIyNjU0NCwiZXhwIjoxNzMzMzEyOTQ0fQ.Kv8eauip9-pI_vvHW_m5cgcW_UlS-UFojlBinTA6dPhibCQWlkhB3mHyJZT0Z4m8
+@authToken = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJNYWNpZWtLMjAwMSIsImlhdCI6MTczNDE4MDQ2NSwiZXhwIjoxNzM0MjY2ODY1fQ.lRiqcdRHqgqU9k2tiZjoK8rmp46iUpgo25R0teWp8Za7PH3PrWyaS__fbOZ4sj9U
 POST http://localhost:8080/auth/register
 Content-Type: application/json
 
@@ -15,7 +15,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-"username": "maciek-kwiatkowski@o2.pl",
+"username": "MaciekK2001",
 "password": "kozak334"
 }
 ####
@@ -53,12 +53,6 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 ###
-POST  http://localhost:8080/api/activities/6c84fb95-12c4-11ec-82a8-0242ac130003
+GET  http://localhost:8080/api/activities/6c84fb95-12c4-11ec-82a8-0242ac130003?pageSize=2&pageNumber=0&sortBy=createdAt
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
-
-{
-  "pageSize": "4",
-  "pageNumber": "0",
-  "sortBy": "createdAt"
-}

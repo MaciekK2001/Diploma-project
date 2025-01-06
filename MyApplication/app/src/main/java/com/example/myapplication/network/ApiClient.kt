@@ -1,15 +1,21 @@
 package com.example.myapplication.network
 
 import android.util.Log
+import com.example.myapplication.dtos.ActivityCreateDTO
+import com.example.myapplication.dtos.UserBasicDataDTO
 import com.example.myapplication.dtos.UserRankingDTO
 import com.example.myapplication.dtos.UserStatsGetDTO
-import com.example.myapplication.jwt.TokenManagerHolder
+import com.example.myapplication.security.TokenManagerHolder
+import com.example.myapplication.model.Activity
+import com.example.myapplication.model.ActivityType
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.example.myapplication.network.networkRequests.LoginRequest
 import com.example.myapplication.network.networkRequests.RegistrationRequest
+import com.example.myapplication.network.networkResponses.ApiResponse
 import com.example.myapplication.network.networkResponses.AuthResponse
 import com.example.myapplication.network.networkResponses.ErrorResponse
+import com.example.myapplication.network.networkResponses.makeApiCall
 import com.google.gson.Gson
 import retrofit2.Response
 
@@ -45,7 +51,7 @@ class ApiClient {
         }
 
         val api = ApiClient()
-        val tokenManager = TokenManagerHolder.retriveTokenManager()
+        val tokenManager = TokenManagerHolder.retrieveTokenManager()
 
         val authUrl: OpenApiAuthService = Retrofit.Builder()
             .baseUrl(AUTH_URL)
@@ -61,41 +67,22 @@ class ApiClient {
     }
 
 
-    suspend fun login(email: String, password: String): Any {
+    suspend fun login(email: String, password: String): ApiResponse<AuthResponse> {
 
-        val response = authUrl.login(LoginRequest(email, password))
-
-        if(response.isSuccessful){
-            val authResponse: AuthResponse = getAuthResponse(response)
-            TokenManagerHolder.tokenManager.saveJwtToken(authResponse.token)
-
-            return authResponse
-        }else{
-            val errorResponse = getErrorResponse(response)
-            if(errorResponse.status == 403){
-                errorResponse.error = "Wrong Username or Password, try again."
-            }
-            Log.d("LOGIN", errorResponse.error)
-
-            return errorResponse
+        val response =  makeApiCall { authUrl.login(LoginRequest(email, password)) }
+        if(response is ApiResponse.Success) {
+            TokenManagerHolder.tokenManager.saveJwtToken(response.data.token)
         }
+        return response
     }
 
-    suspend fun register(firstName: String, lastName: String, email: String, password: String): Any {
+    suspend fun register(registrationRequest: RegistrationRequest): ApiResponse<AuthResponse> {
 
-        val response = authUrl.register(RegistrationRequest(firstName, lastName, email, password, "USER"))
-
-        if(response.isSuccessful){
-            val authResponse: AuthResponse = getAuthResponse(response)
-            tokenManager.saveJwtToken(authResponse.token)
-            Log.d("REGISTER", "fine")
-
-            return authResponse
-            }else{
-                val errorResponse: ErrorResponse = getErrorResponse(response)
-                Log.d("REGISTER", "Response body is null")
-                return errorResponse
-            }
+        val response =  makeApiCall { authUrl.register(registrationRequest) }
+        if(response is ApiResponse.Success) {
+            TokenManagerHolder.tokenManager.saveJwtToken(response.data.token)
+        }
+        return response
 
     }
 
@@ -138,6 +125,81 @@ class ApiClient {
             Log.d("RankingGet", "Unsuccesful")
         }
         return null
+
+    }
+
+    suspend fun getActivities(userId: String, pageNumber: Int, pageSize:Int, sortDirection: String?, sortBy: String?,
+                              conditions: List<ActivityType>?): List<Activity>? {
+
+        val response = baseUrl.getActivities(userId, pageSize, pageNumber, sortDirection, sortBy,
+            conditions,"Bearer " + tokenManager.getJwtToken().toString())
+
+        if(response.isSuccessful){
+            val activitiesList = response.body()
+            if(activitiesList != null){
+                return activitiesList
+            }else{
+                Log.d("ActivitiesGet", "Response body is null")
+            }
+        }else{
+            Log.d("ActivitiesGet", "Unsuccesful")
+        }
+        return null
+    }
+
+    suspend fun getActivitiesToken(pageNumber: Int, pageSize:Int, sortDirection: String?, sortBy: String?,
+                              conditions: List<ActivityType>?): List<Activity>? {
+
+        val response = baseUrl.getActivitiesToken(pageSize, pageNumber, sortDirection, sortBy,
+            conditions,"Bearer " + tokenManager.getJwtToken().toString())
+
+        if(response.isSuccessful){
+            val activitiesList = response.body()
+            if(activitiesList != null){
+                return activitiesList
+            }else{
+                Log.d("ActivitiesGet", "Response body is null")
+            }
+        }else{
+            Log.d("ActivitiesGet", "Unsuccesful")
+        }
+        return null
+    }
+
+    suspend fun getUserBasicData(): UserBasicDataDTO?{
+        val response = baseUrl.getUserBasicData("Bearer " + tokenManager.getJwtToken().toString())
+
+        if(response.isSuccessful){
+            val userBasicDataDTO = response.body()
+            return userBasicDataDTO
+        } else{
+            return null
+        }
+    }
+
+    suspend fun createActivity(activityCreateDTO: ActivityCreateDTO): ApiResponse<Activity>{
+        return makeApiCall {
+            baseUrl.createActivity(
+                "Bearer " + tokenManager.getJwtToken().toString(),
+                activityCreateDTO
+            )
+        }
+    }
+
+    suspend fun updateActivity(activityCreateDTO: ActivityCreateDTO, activityId: String): ApiResponse<Activity>{
+        return makeApiCall {
+            baseUrl.updateActivity(
+                "Bearer " + tokenManager.getJwtToken().toString(), activityId,
+                activityCreateDTO
+            )
+        }
+
+    }
+
+    suspend fun deleteActivity(activityId: String): ApiResponse<Int>{
+        return makeApiCall {
+            baseUrl.deleteActivity("Bearer " + tokenManager.getJwtToken().toString(), activityId)
+        }
 
     }
 

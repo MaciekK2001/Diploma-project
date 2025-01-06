@@ -1,5 +1,6 @@
 package com.example.database.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,14 +45,15 @@ public class User implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    @Column(name = "duels_played")
-    private Integer duelsPlayed;
+    @Column(name = "matches_played")
+    private Integer matchesPlayed;
 
-    @Column(name = "duels_won")
-    private Integer duelsWon;
+    @Column(name = "matches_won")
+    private Integer matchesWon;
 
     @Column(name = "joined_at")
     private Instant joinedAt;
@@ -83,7 +85,7 @@ public class User implements UserDetails {
     }
 
     public double countWinRatio(){
-        return (double) this.duelsWon /this.duelsPlayed;
+        return (double) this.matchesWon /this.matchesPlayed;
     }
 
 }

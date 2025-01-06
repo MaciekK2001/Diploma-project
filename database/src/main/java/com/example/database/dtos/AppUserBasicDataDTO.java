@@ -18,4 +18,5 @@ public class AppUserBasicDataDTO {
 
     String email;
 
+    String username;
 }

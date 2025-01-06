@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Accessibility
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Menu
@@ -20,30 +21,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.myapplication.security.UserDataHolder
 import com.example.myapplication.ui.screen.Screen
-import com.example.myapplication.ui.viewModels.UserScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun NavigationDrawer(scope: CoroutineScope, drawerState: DrawerState,
-                     userScreenViewModel: UserScreenViewModel = viewModel(), navHostController: NavHostController){
-
-    val userStatsGetDTO by userScreenViewModel.userStatsGetDTO.collectAsState()
+fun NavigationDrawer(scope: CoroutineScope, drawerState: DrawerState, navHostController: NavHostController){
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {ModalDrawerSheet {
-            Text("${userStatsGetDTO.appUser?.firstName ?: "Unknown"} " +
-                    (userStatsGetDTO.appUser?.lastName ?: "Unknown"), modifier = Modifier.padding(16.dp))
+            Text("${UserDataHolder.userData.getUsername() ?: "Unknown"} ", modifier = Modifier.padding(16.dp))
             Divider()
             NavigationDrawerItem(
                 label = { Text(text = "My profile") },
@@ -69,6 +63,19 @@ fun NavigationDrawer(scope: CoroutineScope, drawerState: DrawerState,
                     Icon(
                         imageVector = Icons.Filled.Assessment,
                         contentDescription = "Ranking"
+                    )
+                }
+            )
+
+            NavigationDrawerItem(
+                label = { Text(text = "Activities") },
+                selected = false,
+                onClick = { navHostController.navigate(Screen.ActivitiesScreen.route)
+                    scope.launch { drawerState.close() }},
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.Accessibility,
+                        contentDescription = "Activities"
                     )
                 }
             )

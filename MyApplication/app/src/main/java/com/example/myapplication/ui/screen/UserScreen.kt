@@ -27,11 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.myapplication.ui.viewModels.UserScreenViewModel
+import com.example.myapplication.ui.viewModels.UserViewModel
 
 @Composable
 fun UserScreen(navController: NavController?,
-               userScreenViewModel: UserScreenViewModel = viewModel()) {
+               userScreenViewModel: UserViewModel = viewModel()) {
 
     val userStatsGetDTO by userScreenViewModel.userStatsGetDTO.collectAsState()
     val isUserLoaded by userScreenViewModel.isUserLoaded.collectAsState()
@@ -58,7 +58,7 @@ fun UserScreen(navController: NavController?,
                     )
 
                     Text(
-                        text = userStatsGetDTO.appUser?.email ?: "Unknown",
+                        text = userStatsGetDTO.userDTO?.email ?: "Unknown",
                         style = MaterialTheme.typography.titleLarge,
                         fontSize = 12.sp,
                         fontStyle = FontStyle.Italic,
@@ -69,15 +69,15 @@ fun UserScreen(navController: NavController?,
                 }
 
                 Text(
-                    text = "${userStatsGetDTO.appUser?.firstName ?: "Unknown"} " +
-                            (userStatsGetDTO.appUser?.lastName ?: "Unknown"),
+                    text = "${userStatsGetDTO.userDTO?.firstName ?: "Unknown"} " +
+                            (userStatsGetDTO.userDTO?.lastName ?: "Unknown"),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
 
                 Text(
-                    text = "Joined at ${userStatsGetDTO.appUser?.joinedAt ?: "Unknown"}",
+                    text = "Joined at ${userStatsGetDTO.userDTO?.joinedAt ?: "Unknown"}",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -89,7 +89,7 @@ fun UserScreen(navController: NavController?,
                 )
 
                 Text(
-                    text = userStatsGetDTO.appUser?.about ?: "Unknown",
+                    text = userStatsGetDTO.userDTO?.about ?: "Unknown",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )

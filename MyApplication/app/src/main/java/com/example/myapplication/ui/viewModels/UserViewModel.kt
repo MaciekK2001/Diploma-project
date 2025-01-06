@@ -1,18 +1,16 @@
 package com.example.myapplication.ui.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.dtos.UserStatsGetDTO
 import com.example.myapplication.network.ApiClient
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class UserScreenViewModel : ViewModel() {
+class UserViewModel : ViewModel() {
 
     private val _userStatsGetDTO = MutableStateFlow(
         UserStatsGetDTO(null, 0, null, null)
@@ -33,7 +31,7 @@ class UserScreenViewModel : ViewModel() {
             if(responseUserStatsGetDTO != null){
                 _userStatsGetDTO.update { currentState ->
                     val newState = currentState.copy(
-                        appUser = responseUserStatsGetDTO.appUser,
+                        userDTO = responseUserStatsGetDTO.userDTO,
                         avgCalories = responseUserStatsGetDTO.avgCalories,
                         favActivityType = responseUserStatsGetDTO.favActivityType,
                         lastActivity = responseUserStatsGetDTO.lastActivity
