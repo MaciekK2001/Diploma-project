@@ -2,7 +2,6 @@ package com.example.myapplication.ui.screen.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -12,11 +11,15 @@ import androidx.navigation.navArgument
 import com.example.myapplication.model.ActivityType
 import com.example.myapplication.ui.screen.ActivitiesScreen
 import com.example.myapplication.ui.screen.AddActivityScreen
+import com.example.myapplication.ui.screen.ChangePasswordScreen
 import com.example.myapplication.ui.screen.LoginPage
+import com.example.myapplication.ui.screen.PreviewUserListWithActions
 import com.example.myapplication.ui.screen.RegistrationPage
 import com.example.myapplication.ui.screen.Screen
 import com.example.myapplication.ui.screen.UserScreen
+import com.example.myapplication.ui.screen.UsersProgressPreview
 import com.example.myapplication.ui.screen.UsersRankingScreen
+import com.example.myapplication.ui.screen.combined
 
 
 @Composable
@@ -40,20 +43,34 @@ fun MainNavigation(modifier: Modifier, navController: NavHostController) {
         startDestination = Screen.UserScreen.route,
         modifier = modifier
     ) {
-        composable(route = Screen.UserScreen.route) {
-            UserScreen(navController = navController)
+        composable(route = Screen.UserScreen.route,
+            arguments = listOf(
+                navArgument("username"){type = NavType.StringType; nullable = true}
+            )) { backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username")
+            UserScreen(navController = navController, username = username)
         }
 
         composable(route = Screen.UsersRankingScreen.route) {
             UsersRankingScreen(navController = navController)
         }
 
-        composable(route = Screen.ActivitiesScreen.route) { backStackEntry ->
+        composable(route = Screen.MatchScreen.route) {
+            PreviewUserListWithActions()
+        }
+
+        composable(route = Screen.StatisticsScreen.route) {
+            combined()
+        }
+
+        composable(route = Screen.ActivitiesScreen.route,  arguments = listOf(
+            navArgument("userId") { type = NavType.StringType; nullable = true })
+        ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             ActivitiesScreen(navController = navController, userId = userId)
         }
         composable(
-                route = "add_activity_screen?activityId={activityId}&burntCalories={burntCalories}&time={time}&activityType={activityType}",
+            route = Screen.AddActivityScreen.route,
             arguments = listOf(
                 navArgument("activityId") { type = NavType.StringType; nullable = true },
                 navArgument("burntCalories") { type = NavType.IntType; defaultValue = 0 },
@@ -68,6 +85,10 @@ fun MainNavigation(modifier: Modifier, navController: NavHostController) {
             }
 
             AddActivityScreen(activityId, burntCalories, time, activityType, navController = navController)
+        }
+
+        composable(route = Screen.ChangePasswordScreen.route) {
+            ChangePasswordScreen(navController = navController)
         }
     }
 

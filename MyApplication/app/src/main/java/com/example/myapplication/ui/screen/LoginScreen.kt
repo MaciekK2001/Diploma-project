@@ -46,7 +46,6 @@ fun LoginPage(
     navController: NavController,
     loginViewModel: LoginViewModel = viewModel()
 ) {
-
     val context = LocalContext.current
     val loginResponse by loginViewModel.loginResponse.collectAsState()
 
@@ -117,17 +116,6 @@ fun LoginPage(
                     color = Color.Red
                 )
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-            ClickableText(
-                text = AnnotatedString("Forgot password?"),
-                onClick = { },
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily.Default
-                )
-
-            )
         }
 
         LaunchedEffect(loginResponse is ApiResponse.Success) {

@@ -1,13 +1,18 @@
 package com.example.myapplication.ui.screen.utils
 
+import android.content.Context
+import android.content.Intent
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Accessibility
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.SensorDoor
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,18 +26,33 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.myapplication.LoginActivity
+import com.example.myapplication.network.networkResponses.ApiResponse
 import com.example.myapplication.security.UserDataHolder
 import com.example.myapplication.ui.screen.Screen
+import com.example.myapplication.ui.viewModels.LogoutViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun NavigationDrawer(scope: CoroutineScope, drawerState: DrawerState, navHostController: NavHostController){
+fun NavigationDrawer(scope: CoroutineScope, drawerState: DrawerState, navHostController: NavHostController,
+                     logoutViewModel: LogoutViewModel = viewModel(), context: Context
+){
+
+    val logoutResponse by logoutViewModel.logoutResponse.collectAsState()
+
+    if (logoutResponse is ApiResponse.Success) {
+        val intent = Intent(context, LoginActivity::class.java)
+        context.startActivity(intent)
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -43,7 +63,7 @@ fun NavigationDrawer(scope: CoroutineScope, drawerState: DrawerState, navHostCon
                 label = { Text(text = "My profile") },
                 selected = false,
                 onClick = {
-                    navHostController.navigate(Screen.UserScreen.route)
+                    navHostController.navigate("user_screen?username=${null}")
                     scope.launch { drawerState.close() }
                           },
                 icon = {
@@ -70,12 +90,53 @@ fun NavigationDrawer(scope: CoroutineScope, drawerState: DrawerState, navHostCon
             NavigationDrawerItem(
                 label = { Text(text = "Activities") },
                 selected = false,
-                onClick = { navHostController.navigate(Screen.ActivitiesScreen.route)
+                onClick = { navHostController.navigate("activities_screen?userId=${null}")
                     scope.launch { drawerState.close() }},
                 icon = {
                     Icon(
                         imageVector = Icons.Filled.Accessibility,
                         contentDescription = "Activities"
+                    )
+                }
+            )
+
+            NavigationDrawerItem(
+                label = { Text(text = "Statistics") },
+                selected = false,
+                onClick = { navHostController.navigate(Screen.StatisticsScreen.route)
+                    scope.launch { drawerState.close() }},
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.BrokenImage,
+                        contentDescription = "statistics"
+                    )
+                }
+            )
+
+            NavigationDrawerItem(
+                label = { Text(text = "Match") },
+                selected = false,
+                onClick = { navHostController.navigate(Screen.MatchScreen.route)
+                    scope.launch { drawerState.close() }},
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.Bolt,
+                        contentDescription = "statistics"
+                    )
+                }
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            NavigationDrawerItem(
+                label = { Text(text = "Logout") },
+                selected = false,
+                onClick = { logoutViewModel.logout()
+                    scope.launch { drawerState.close() }},
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.SensorDoor,
+                        contentDescription = "Logout"
                     )
                 }
             )

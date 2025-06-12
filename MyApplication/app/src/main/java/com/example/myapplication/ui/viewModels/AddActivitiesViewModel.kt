@@ -7,6 +7,7 @@ import com.example.myapplication.dtos.ActivityCreateDTO
 import com.example.myapplication.model.Activity
 import com.example.myapplication.network.ApiClient
 import com.example.myapplication.network.networkResponses.ApiResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,14 +19,14 @@ class AddActivitiesViewModel: ViewModel() {
     val apiResponse: StateFlow<ApiResponse<Activity>?> = _apiResponse.asStateFlow()
 
     fun addActivity(activityCreateDTO: ActivityCreateDTO){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _apiResponse.value = ApiClient.api.createActivity(activityCreateDTO)
             Log.d("apicall", _apiResponse.value.toString())
         }
     }
 
     fun updateActivity(activityCreateDTO: ActivityCreateDTO, activityId: String){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _apiResponse.value = ApiClient.api.updateActivity(activityCreateDTO, activityId)
         }
     }

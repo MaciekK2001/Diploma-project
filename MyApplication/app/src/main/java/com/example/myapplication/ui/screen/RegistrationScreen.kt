@@ -52,6 +52,7 @@ fun RegistrationPage(navController: NavController, viewModel: RegistrationViewMo
             val email = remember { mutableStateOf(TextFieldValue()) }
             val password = remember { mutableStateOf(TextFieldValue()) }
             val username = remember { mutableStateOf(TextFieldValue()) }
+            val about = remember { mutableStateOf(TextFieldValue()) } // New about field
 
             Text(
                 text = "Registration",
@@ -78,7 +79,7 @@ fun RegistrationPage(navController: NavController, viewModel: RegistrationViewMo
 
             Spacer(modifier = Modifier.height(20.dp))
             TextField(
-                label = { Text(text = "username") },
+                label = { Text(text = "Username") },
                 value = username.value,
                 onValueChange = { username.value = it })
 
@@ -90,6 +91,15 @@ fun RegistrationPage(navController: NavController, viewModel: RegistrationViewMo
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 onValueChange = { password.value = it })
 
+            Spacer(modifier = Modifier.height(20.dp))
+            TextField(
+                label = { Text(text = "About (tell us something about yourself)") },
+                value = about.value,
+                onValueChange = { about.value = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
             if (registerResponse is ApiResponse.Error) {
@@ -109,6 +119,7 @@ fun RegistrationPage(navController: NavController, viewModel: RegistrationViewMo
                             password.value.text,
                             email.value.text,
                             "USER",
+                            about.value.text
                         ))
                     },
                     shape = RoundedCornerShape(50.dp),

@@ -12,8 +12,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.security.TokenManager
 import com.example.myapplication.security.TokenManagerHolder
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val scope = rememberCoroutineScope()
 
-                    NavigationDrawer(scope, drawerState, navController)
+                    NavigationDrawer(scope, drawerState, navController, context = LocalContext.current)
                 }
             }
         }

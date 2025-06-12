@@ -1,6 +1,7 @@
 package com.example.myapplication.network.networkResponses
 
 import com.google.gson.annotations.SerializedName
+import retrofit2.Response
 
 data class AuthResponse(
 
@@ -25,21 +26,15 @@ sealed class ApiResponse<out T> {
     data class Error(val message: String, val code: Int? = null) : ApiResponse<Nothing>()
 }
 
-suspend fun <T> makeApiCall(
-    call: suspend () -> retrofit2.Response<T>
-): ApiResponse<T> {
+suspend fun <T> makeApiCall(call: suspend () -> Response<T>): ApiResponse<T> {
     return try {
         val response = call()
         if (response.isSuccessful) {
-            val body = response.body()
-            if (body != null) {
-                ApiResponse.Success(body)
-            } else {
-                @Suppress("UNCHECKED_CAST")
-                ApiResponse.Success(response.code() as T)
-            }
+            response.body()?.let { ApiResponse.Success(it) }
+                ?: ApiResponse.Error("Empty response body", response.code())
         } else {
-            ApiResponse.Error(response.message(), response.code())
+            val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+            ApiResponse.Error(errorMessage, response.code())
         }
     } catch (e: Exception) {
         ApiResponse.Error("Network error: ${e.localizedMessage}")

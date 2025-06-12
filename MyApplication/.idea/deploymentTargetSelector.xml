@@ -13,16 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="SimplePicker">
+      <SelectionState runConfigName="PreviewChartWithTitles">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="AddActivityScreen">
+      <SelectionState runConfigName="PreviewYearlyStatisticsLineChartWithTitles">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="NumberPicker">
+      <SelectionState runConfigName="combined">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="StyledNumberPicker">
+      <SelectionState runConfigName="PreviewUserListWithActions">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="UsersProgressPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

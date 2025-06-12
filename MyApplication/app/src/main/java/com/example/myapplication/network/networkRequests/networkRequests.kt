@@ -11,7 +11,8 @@ data class RegistrationRequest(
     val username: String,
     val password: String,
     val email: String,
-    val role: String
+    val role: String,
+    val about: String
 )
 
 data class UserStatsRequest(

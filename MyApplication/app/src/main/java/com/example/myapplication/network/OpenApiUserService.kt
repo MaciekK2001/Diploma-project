@@ -1,6 +1,11 @@
 package com.example.myapplication.network
 
 import com.example.myapplication.dtos.ActivityCreateDTO
+import com.example.myapplication.dtos.ChangePasswordDTO
+import com.example.myapplication.dtos.DailyStatisticsDTO
+import com.example.myapplication.dtos.MessageResponseDTO
+import com.example.myapplication.dtos.MonthlyStatisticsDTO
+import com.example.myapplication.dtos.StatisticsSearchParams
 import com.example.myapplication.dtos.UserBasicDataDTO
 import com.example.myapplication.dtos.UserRankingDTO
 import com.example.myapplication.dtos.UserStatsGetDTO
@@ -21,7 +26,7 @@ interface OpenApiUserService {
     @Headers("Content-Type: application/json")
     @GET("users")
     suspend fun getUser(
-        @Query("email") email: String?,
+        @Query("username") username: String?,
         @Query("timePeriodOfAvtivities") timePeriodOfActivities: Int?,
         @Header("Authorization") token: String
     ): Response<UserStatsGetDTO>
@@ -87,5 +92,31 @@ interface OpenApiUserService {
         @Header("Authorization") token: String,
         @Path("activityId") activityId: String,
     ): Response<Int>
+
+    @Headers("Content-Type: application/json")
+    @PUT("changePassword")
+    suspend fun changePassword(
+        @Header("Authorization") token: String,
+        @Body changePasswordDTO: ChangePasswordDTO
+    ): Response<MessageResponseDTO>
+
+    @Headers("Content-Type: application/json")
+    @POST("logout")
+    suspend fun logout(
+        @Header("Authorization") token: String,
+    ): Response<MessageResponseDTO>
+
+    @Headers("Content-Type: application/json")
+    @POST("getDailyStatistics")
+    suspend fun getDailyStatistics(
+        @Header("Authorization") token: String,
+        @Body statisticsSearchParams: StatisticsSearchParams
+    ): Response<List<DailyStatisticsDTO>>
+
+    @Headers("Content-Type: application/json")
+    @POST("getDailyStatistics")
+    suspend fun getYearlyStatistics(
+        @Header("Authorization") token: String,
+    ): Response<List<MonthlyStatisticsDTO>>
 
 }

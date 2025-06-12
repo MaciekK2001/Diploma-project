@@ -7,7 +7,6 @@ import com.example.myapplication.network.ApiClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class UserViewModel : ViewModel() {
@@ -20,28 +19,28 @@ class UserViewModel : ViewModel() {
     private val _isUserLoaded = MutableStateFlow(false)
     val isUserLoaded: StateFlow<Boolean> = _isUserLoaded.asStateFlow()
 
-    init {
-        getUser()
-    }
-    private fun getUser(){
+    fun getUser() {
         viewModelScope.launch {
             val responseUserStatsGetDTO: UserStatsGetDTO? =
                 ApiClient.api.getUser("", null)
 
-            if(responseUserStatsGetDTO != null){
-                _userStatsGetDTO.update { currentState ->
-                    val newState = currentState.copy(
-                        userDTO = responseUserStatsGetDTO.userDTO,
-                        avgCalories = responseUserStatsGetDTO.avgCalories,
-                        favActivityType = responseUserStatsGetDTO.favActivityType,
-                        lastActivity = responseUserStatsGetDTO.lastActivity
-                    )
-                    newState
-                }
+            if (responseUserStatsGetDTO != null) {
+                _userStatsGetDTO.value = responseUserStatsGetDTO
+                _isUserLoaded.value = true
+            }
+        }
+    }
+
+    fun getOtherUser(username: String) {
+        viewModelScope.launch {
+            val responseUserStatsGetDTO: UserStatsGetDTO? =
+                ApiClient.api.getUser(username, null)
+
+            if (responseUserStatsGetDTO != null) {
+                _userStatsGetDTO.value = responseUserStatsGetDTO
                 _isUserLoaded.value = true
             }
         }
 
     }
-
 }

@@ -1,4 +1,4 @@
-@authToken = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJNYWNpZWtLMjAwMSIsImlhdCI6MTczNDE4MDQ2NSwiZXhwIjoxNzM0MjY2ODY1fQ.lRiqcdRHqgqU9k2tiZjoK8rmp46iUpgo25R0teWp8Za7PH3PrWyaS__fbOZ4sj9U
+@authToken = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJNYWNpZWtLMjAwMSIsImlhdCI6MTczNzkzMTk4NiwiZXhwIjoxNzM4MDE4Mzg2fQ.yCGHYzCWUN8Tj8bUhHxvsSl1ftH6gqR_X4CGvLzU0wYFKTmsjuKNlNF7P_yrrbES
 POST http://localhost:8080/auth/register
 Content-Type: application/json
 
@@ -25,9 +25,10 @@ Authorization: Bearer {{authToken}}
 
 
 {
-  "burntCalories": "455",
+  "burntCalories": "500",
   "time": "360000",
-  "type": "SWIM"
+  "type": "SWIM",
+  "activityDate": "2025-01-18T12:34:56Z"
 }
 
 ###

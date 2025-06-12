@@ -38,9 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.myapplication.components.TimeConverter
+import com.example.myapplication.utils.TimeConverter
 import com.example.myapplication.model.Activity
 import com.example.myapplication.model.ActivityType
+import com.example.myapplication.security.UserDataHolder
 import com.example.myapplication.ui.viewModels.ActivitiesViewModel
 import com.example.myapplication.ui.viewModels.ActivitiesViewModel.SearchParameters
 
@@ -78,7 +79,9 @@ fun ActivitiesScreen(
                         text = if (isSearchParametersVisible) "Hide search parameters" else "Show search parameters"
                     )
                 }
-                AddActivityButton { navController.navigate("add_activity_screen?activityId=${null}&burntCalories=${null}&time=${null}&activityType=${null}") }
+                if(userId == null) {
+                    AddActivityButton { navController.navigate("add_activity_screen?activityId=${null}&burntCalories=${null}&time=${null}&activityType=${null}") }
+                }
             }
 
             if (isSearchParametersVisible) {
@@ -88,7 +91,8 @@ fun ActivitiesScreen(
             ColumnHeader()
             LazyColumn {
                 items(listOfActivities) { item ->
-                    ActivityRow(activity = item, navController, viewModel = viewModel)
+                    ActivityRow(activity = item, navController, viewModel = viewModel,
+                        userId = UserDataHolder.userData.getUserId().toString())
                 }
                 if (listOfActivities.isNotEmpty()) {
                     item {
@@ -186,7 +190,8 @@ fun SearchParametersSection(
 }
 
 @Composable
-fun ActivityRow(activity: Activity, navController: NavController, viewModel: ActivitiesViewModel) {
+fun ActivityRow(activity: Activity, navController: NavController, viewModel: ActivitiesViewModel,
+                userId: String) {
     val lightPurple = Color.hsv(270f, 0.2f, 0.9f)
     var isClicked by remember { mutableStateOf(false) }
     var isdeleted by remember { mutableStateOf(false) }
@@ -200,7 +205,7 @@ fun ActivityRow(activity: Activity, navController: NavController, viewModel: Act
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         if (!isdeleted) {
-            if (isClicked) {
+            if (isClicked && userId == activity.user.userId.toString()) {
                 Button(onClick = { navController.navigate("add_activity_screen?activityId=${activity.activityId}&burntCalories=${activity.burntCalories}&time=${activity.time}&activityType=${activity.activityType}") })
                 { Text("Update", color = Color.White) }
                 Button(onClick = {
@@ -235,7 +240,7 @@ fun ActivityRow(activity: Activity, navController: NavController, viewModel: Act
                 )
 
                 Text(
-                    text = TimeConverter.convertToHours(activity.time),
+                    text = TimeConverter.convertToHours(activity.time)?: "",
                     modifier = Modifier
                         .weight(1f)
                         .padding(16.dp),
@@ -245,7 +250,7 @@ fun ActivityRow(activity: Activity, navController: NavController, viewModel: Act
                 )
 
                 Text(
-                    text = TimeConverter.formatDate(activity.createdAt),
+                    text = TimeConverter.formatDate(activity.createdAt)?: "",
                     modifier = Modifier
                         .weight(1f)
                         .padding(16.dp),

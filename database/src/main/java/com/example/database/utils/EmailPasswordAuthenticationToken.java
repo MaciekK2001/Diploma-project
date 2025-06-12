@@ -1,4 +1,4 @@
-package com.example.database.config;
+package com.example.database.utils;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;

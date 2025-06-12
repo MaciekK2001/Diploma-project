@@ -2,6 +2,11 @@ package com.example.myapplication.network
 
 import android.util.Log
 import com.example.myapplication.dtos.ActivityCreateDTO
+import com.example.myapplication.dtos.ChangePasswordDTO
+import com.example.myapplication.dtos.DailyStatisticsDTO
+import com.example.myapplication.dtos.MessageResponseDTO
+import com.example.myapplication.dtos.MonthlyStatisticsDTO
+import com.example.myapplication.dtos.StatisticsSearchParams
 import com.example.myapplication.dtos.UserBasicDataDTO
 import com.example.myapplication.dtos.UserRankingDTO
 import com.example.myapplication.dtos.UserStatsGetDTO
@@ -14,10 +19,8 @@ import com.example.myapplication.network.networkRequests.LoginRequest
 import com.example.myapplication.network.networkRequests.RegistrationRequest
 import com.example.myapplication.network.networkResponses.ApiResponse
 import com.example.myapplication.network.networkResponses.AuthResponse
-import com.example.myapplication.network.networkResponses.ErrorResponse
 import com.example.myapplication.network.networkResponses.makeApiCall
-import com.google.gson.Gson
-import retrofit2.Response
+
 
 class ApiClient {
     init {
@@ -86,11 +89,11 @@ class ApiClient {
 
     }
 
-    suspend fun getUser(email: String?, timePeriodOfActivities: Int?): UserStatsGetDTO? {
+    suspend fun getUser(username: String?, timePeriodOfActivities: Int?): UserStatsGetDTO? {
 
         Log.d("Token", tokenManager.getJwtToken().toString())
 
-        val response = baseUrl.getUser(email,
+        val response = baseUrl.getUser(username,
             timePeriodOfActivities,
             "Bearer " +
             tokenManager.getJwtToken().toString()
@@ -164,6 +167,7 @@ class ApiClient {
             Log.d("ActivitiesGet", "Unsuccesful")
         }
         return null
+
     }
 
     suspend fun getUserBasicData(): UserBasicDataDTO?{
@@ -203,16 +207,27 @@ class ApiClient {
 
     }
 
-    private fun getErrorResponse(response: Response<*>): ErrorResponse{
-        val gson = Gson()
-        val errorBody = response.errorBody()?.string()
-
-        return gson.fromJson(errorBody, ErrorResponse::class.java)
+    suspend fun changePassword(changePasswordDTO: ChangePasswordDTO): ApiResponse<MessageResponseDTO>{
+        return makeApiCall {
+            baseUrl.changePassword("Bearer " + tokenManager.getJwtToken().toString(), changePasswordDTO)
+        }
     }
 
-    private fun getAuthResponse(response: Response<*>): AuthResponse{
-        val gson = Gson()
+    suspend fun logout(): ApiResponse<MessageResponseDTO>{
+        return makeApiCall {
+            baseUrl.logout("Bearer " + tokenManager.getJwtToken().toString())
+        }
+    }
 
-        return gson.fromJson(gson.toJson(response.body()), AuthResponse::class.java)
+    suspend fun getDailyStatistics(statisticsSearchParams: StatisticsSearchParams): ApiResponse<List<DailyStatisticsDTO>>{
+        return makeApiCall {
+            baseUrl.getDailyStatistics("Bearer " + tokenManager.getJwtToken().toString(), statisticsSearchParams)
+        }
+    }
+
+    suspend fun getYearlyStatistics(): ApiResponse<List<MonthlyStatisticsDTO>>{
+        return makeApiCall {
+            baseUrl.getYearlyStatistics("Bearer " + tokenManager.getJwtToken().toString())
+        }
     }
 }

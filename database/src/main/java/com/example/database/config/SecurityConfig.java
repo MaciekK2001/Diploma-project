@@ -2,6 +2,7 @@ package com.example.database.config;
 
 import com.example.database.filters.JwtAuthenticationFilter;
 import com.example.database.services.UserDetailsServiceImp;
+import com.example.database.utils.CustomLogoutHandler;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,27 +44,20 @@ public class SecurityConfig{
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         req->req.requestMatchers("/auth/**")
                                 .permitAll()
                                 .requestMatchers("/admin_only/**").hasAuthority("ADMIN")
-                                .requestMatchers("/api/users").hasAuthority("USER")
+                                .requestMatchers("/api/**").hasAuthority("USER")
                                 .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated()
                 ).userDetailsService(userDetailsServiceImp)
                 .sessionManagement(session->session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(l->l
-                        .logoutUrl("/logout")
-                        .addLogoutHandler(logoutHandler)
-                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()
-                        ))
                 .build();
-
     }
 
     @Bean

@@ -129,7 +129,7 @@ fun AddActivityScreen(
                     )
                 } else {
                     LaunchedEffect(apiResponse) {
-                        navController.navigate(Screen.ActivitiesScreen.route)
+                        navController.navigate("activities_screen?userid=${null}")
                     }
                 }
             }
@@ -137,7 +137,6 @@ fun AddActivityScreen(
     }
 
 }
-
 
 @Composable
 fun StyledNumberPicker(items: List<Int>, timeType: String, onValueSelected: (Int) -> Unit) {
@@ -194,7 +193,6 @@ fun StyledNumberPicker(items: List<Int>, timeType: String, onValueSelected: (Int
 
 @Composable
 fun RadioButtonActivityType(selectedOption: MutableState<String>) {
-
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
             text = "Activity Type:",
@@ -224,7 +222,6 @@ fun setParameters(
     hours: MutableState<Int>, minutes: MutableState<Int>, seconds: MutableState<Int>,
     burntCalories: MutableState<TextFieldValue>, activityType: MutableState<String>
 ) {
-
     if (pTime != null) {
         hours.value = TimeUnit.MILLISECONDS.toHours(pTime).toInt()
         minutes.value = TimeUnit.MILLISECONDS.toMinutes(pTime).toInt() % 60

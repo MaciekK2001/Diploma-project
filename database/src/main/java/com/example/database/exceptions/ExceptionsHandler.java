@@ -22,4 +22,9 @@ public class ExceptionsHandler {
         return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public final ResponseEntity<String> UnauthorizedHandler(UnauthorizedException exception) {
+        String message = exception.getMessage();
+        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
+    }
 }

@@ -20,7 +20,4 @@ interface OpenApiAuthService {
     suspend fun register(
         @Body registrationRequest: RegistrationRequest
     ): Response<AuthResponse>
-
 }
-
-

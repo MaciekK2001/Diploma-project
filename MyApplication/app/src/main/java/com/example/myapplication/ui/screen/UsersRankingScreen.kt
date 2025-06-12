@@ -1,5 +1,8 @@
 package com.example.myapplication.ui.screen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,12 +39,29 @@ fun UsersRankingScreen(navController: NavController?, viewModel: UsersRankingVie
     }
 
     LazyColumn {
+        item{
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = { },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Text(
+                        text = "Show search parameters"
+                    )
+                }
+            }
+        }
         item {
             ColumnHeaders()
         }
 
         itemsIndexed(listOfUsers) { index, item ->
-            UserDataRow(userData = item, position = index + 1)
+            UserDataRow(userData = item, position = index + 1, navController = navController)
         }
 
         item {
@@ -66,6 +87,7 @@ fun ColumnHeaders() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 8.dp)
+            .background(Color.LightGray, RoundedCornerShape(8.dp))
     ) {
         Text(
             text = "Rank",
@@ -98,11 +120,15 @@ fun ColumnHeaders() {
 }
 
 @Composable
-fun UserDataRow(userData: UserRankingDTO, position: Int) {
+fun UserDataRow(userData: UserRankingDTO, position: Int, navController: NavController?) {
+    val lightPurple = Color.hsv(270f, 0.2f, 0.9f)
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable {
+                navController?.navigate("user_screen?username=${userData.appUserBasicDataDTO.username}")
+            },
         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {

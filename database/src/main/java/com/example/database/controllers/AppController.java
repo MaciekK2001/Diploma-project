@@ -1,15 +1,21 @@
 package com.example.database.controllers;
 
+import com.example.database.utils.CustomLogoutHandler;
 import com.example.database.dtos.*;
 import com.example.database.entities.Activity;
-import com.example.database.entities.AuthenticationResponse;
+import com.example.database.dtos.AuthenticationResponse;
 import com.example.database.entities.User;
 import com.example.database.services.AppService;
 import com.example.database.services.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,12 +23,14 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin("*")
+@CrossOrigin("http://localhost:4200")
 public class AppController {
 
     private final AppService appService;
 
     private final AuthenticationService authService;
+
+    private final CustomLogoutHandler logoutHandler;
 
     @PostMapping("/auth/register")
     public ResponseEntity<AuthenticationResponse> register(
@@ -88,5 +96,30 @@ public class AppController {
         return appService.getUserDataDTO();
     }
 
+    @PutMapping("/api/changePassword")
+    public MessageResponseDTO changePassword(@RequestBody ChangePasswordDTO changePasswordDTO){
+        authService.changePassword(changePasswordDTO.getOldPassword(), changePasswordDTO.getNewPassword());
+
+        return MessageResponseDTO.builder().message("Successfully changed password").build();
+    }
+
+    @PostMapping("/api/logout")
+    public MessageResponseDTO logout(HttpServletRequest request, HttpServletResponse response, HttpSession httpSession) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        logoutHandler.logout(request, response, authentication);
+        SecurityContextHolder.clearContext();
+
+        return MessageResponseDTO.builder().message("Successfully logged out").build();
+    }
+
+    @GetMapping("/api/getDailyStatistics")
+    public List<DailyStatisticsDTO> getDailyStatistics(@RequestBody StatisticsSearchParams statisticsSearchParams) {
+        return appService.getStatisticsDaily(statisticsSearchParams.getStatisticsPeriod());
+    }
+
+    @GetMapping("/api/getYearlyStatistics")
+    public List<MonthlyStatisticsDTO> getYearlyStatistics() {
+        return appService.getStatisticsYearly();
+    }
 
 }

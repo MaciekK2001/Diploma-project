@@ -7,8 +7,6 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class MatchProgressDTO {
-    double distance;
-
-    double time;
+public class MessageResponseDTO {
+    String message;
 }

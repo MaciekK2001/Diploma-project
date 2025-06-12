@@ -1,15 +1,21 @@
 package com.example.database.services;
 
+import com.example.database.dtos.AuthenticationResponse;
 import com.example.database.dtos.UserCreateDTO;
 import com.example.database.entities.*;
+import com.example.database.exceptions.UnauthorizedException;
 import com.example.database.repositories.TokenRepository;
 import com.example.database.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -42,6 +48,7 @@ public class AuthenticationService {
         user.setLastName(request.getLastName());
         user.setAbout(request.getAbout());
         user.setRole(Role.USER);
+        user.setJoinedAt(Instant.now());
 
         user = userRepository.save(user);
 
@@ -54,8 +61,7 @@ public class AuthenticationService {
     }
 
     public void changePassword(String oldPassword, String newPassword) {
-        String username = authenticationManager.getClass().getName();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = retriveCurrentLoggedInUser();
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new RuntimeException("Old password is incorrect");
@@ -67,12 +73,16 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse authenticate(User request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid username or password");
+        }
 
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
         String jwt = jwtService.generateToken(user);
@@ -101,5 +111,13 @@ public class AuthenticationService {
         token.setLoggedOut(false);
         token.setUser(user);
         tokenRepository.save(token);
+    }
+
+    private User retriveCurrentLoggedInUser(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return userRepository.findByUsername(username).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "User with username: " + username + " wasn't found")
+        );
     }
 }

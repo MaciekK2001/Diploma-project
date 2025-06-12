@@ -23,18 +23,18 @@ VALUES
 FOR i IN 1..50 LOOP
         INSERT INTO activity (activity_id, user_id, burnt_calories, time, created_at, activity_type)
         VALUES (
-            gen_random_uuid(), -- Automatycznie generowane UUID dla każdej aktywności
-            '6c84fb95-12c4-11ec-82a8-0242ac130001', -- Przypisanie do tego samego użytkownika
-            (300 + i * 10), -- Zwiększane spalone kalorie
-            (180000 + i * 10000), -- Czas aktywności zwiększa się o 10 000 ms na każdą iterację
-            CURRENT_TIMESTAMP - (i || ' days')::interval, -- Daty wstecz o 'i' dni
+            gen_random_uuid(),
+            '6c84fb95-12c4-11ec-82a8-0242ac130001',
+            (300 + i * 10),
+            (180000 + i * 10000),
+            CURRENT_TIMESTAMP - (i || ' days')::interval,
             CASE i % 5
                 WHEN 0 THEN 'WORKOUT'
                 WHEN 1 THEN 'RUN'
                 WHEN 2 THEN 'SWIM'
                 WHEN 3 THEN 'DANCE'
                 ELSE 'TEAM_SPORT'
-            END -- Typ aktywności zmienia się cyklicznie
+            END
         );
 END LOOP;
 END

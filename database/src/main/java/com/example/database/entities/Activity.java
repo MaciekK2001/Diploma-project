@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -31,9 +32,8 @@ public class Activity {
     @Column(nullable = false)
     private Long time;
 
-    @CreationTimestamp
     @Column(updatable = false)
-    private Instant createdAt;
+    private Timestamp createdAt;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

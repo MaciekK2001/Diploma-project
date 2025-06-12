@@ -1,4 +1,4 @@
-package com.example.database.config;
+package com.example.database.utils;
 
 import com.example.database.entities.Token;
 import com.example.database.repositories.TokenRepository;

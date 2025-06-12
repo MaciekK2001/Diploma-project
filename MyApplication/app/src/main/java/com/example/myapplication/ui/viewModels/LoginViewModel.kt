@@ -14,8 +14,6 @@ class LoginViewModel : ViewModel() {
     private val _loginResponse = MutableStateFlow<ApiResponse<AuthResponse>?>(null)
     val loginResponse: StateFlow<ApiResponse<AuthResponse>?> = _loginResponse.asStateFlow()
 
-
-
     fun login(email: String, password: String) {
         _loginResponse.value = null
         viewModelScope.launch(Dispatchers.IO) {
